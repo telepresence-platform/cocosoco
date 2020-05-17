@@ -1,0 +1,21 @@
+.audience-item {
+  clip-path: circle(36%);
+  height: 120px;
+  width: 120px;
+  background-color: #f9f9fa;
+  pointer-events: auto;
+}
+
+.audience-item--selected {
+  background-color: #ff1ad9;
+}
+
+.audience-item__video {
+  pointer-events: none;
+  clip-path: circle(36%);
+  height: 110px;
+  width: 110px;
+  position: relative;
+  top: 5px;
+  left: 5px;
+}

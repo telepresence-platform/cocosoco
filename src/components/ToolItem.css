@@ -1,0 +1,9 @@
+.tool-item {
+  width: 100px;
+  height: 100px;
+  pointer-events: auto;
+}
+
+.tool-item:first-child {
+  margin-right: 16px;
+}

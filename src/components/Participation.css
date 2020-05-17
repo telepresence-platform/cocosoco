@@ -1,0 +1,32 @@
+.participation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #f9f9fa;
+}
+
+.participation__button {
+  background: none;
+  border: 1px solid #38383d;
+  color: #38383d;
+  font-size: 5vw;
+  font-weight: 100;
+  padding: 0.5vw 2vw;
+}
+
+.participation__button:disabled {
+  border-color: #d7d7db;
+  color: #d7d7db;
+}
+
+.participation__room {
+  font-weight: 400;
+}
+
+.participation__error {
+  color: #d70022;
+  font-size: 3vw;
+  font-weight: 100;
+}
