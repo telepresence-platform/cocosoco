@@ -46,7 +46,9 @@ class Presenter extends React.PureComponent<IProps> {
       const peerId = p.peerId;
       const x = video.offsetLeft + video.clientWidth * p.x;
       const y = video.offsetTop + video.clientHeight * p.y;
-      return <PointingComponent key={peerId} peerId={peerId} x={x} y={y} />;
+      const radian = Math.atan2(p.x - 0.5, -(p.y - 0.5));
+
+      return <PointingComponent key={peerId} peerId={peerId} x={x} y={y} radian={radian}/>;
     });
   }
 
