@@ -2,13 +2,14 @@ import { reducerWithInitialState } from "typescript-fsa-reducers";
 
 import {
   AddPeerAction,
+  AddPointingAction,
   ParticipateAction,
   RemovePeerAction,
+  RemovePointingAction,
   SwitchCameraAction,
   ToggleAudioMutingAction,
   ToggleCameraMutingAction,
   OnPeerSelectedAction,
-  OnPresentationPointedAction,
 } from "./actions";
 import { Member, Pointing } from "./types";
 
@@ -43,6 +44,12 @@ export const reducer = reducerWithInitialState(initialState)
 
     return Object.assign({}, state, { audiences, presenter });
   })
+  .case(AddPointingAction.done, (state, { result }) => {
+    const { peerId, x, y } = result;
+    const pointings = state.pointings.filter(a => a.peerId !== peerId);
+
+    return Object.assign({}, state, { pointings: [...pointings, { peerId, x, y }] });
+  })
   .case(ParticipateAction.done, (state, { result }) => {
     const { localPeer, localStream, room } = result;
 
@@ -59,6 +66,11 @@ export const reducer = reducerWithInitialState(initialState)
     const presenter = state.presenter?.peerId === peerId ? null : state.presenter;
 
     return Object.assign({}, state, { audiences, presenter });
+  })
+  .case(RemovePointingAction, (state, { peerId }) => {
+    const pointings = state.pointings.filter(a => a.peerId !== peerId);
+
+    return Object.assign({}, state, { pointings });
   })
   .case(SwitchCameraAction.done, (state, { result }) => {
     const { localStream } = result;
@@ -88,9 +100,4 @@ export const reducer = reducerWithInitialState(initialState)
     const presenter = state.audiences.find(a => a.peerId === peerId);
 
     return Object.assign({}, state, { presenter, _selectedPeerId: peerId });
-  })
-  .case(OnPresentationPointedAction, (state, { peerId, x, y }) => {
-    const pointings = state.pointings.filter(a => a.peerId !== peerId);
-
-    return Object.assign({}, state, { pointings: [...pointings, { peerId, x, y }] });
   })
