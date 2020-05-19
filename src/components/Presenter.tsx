@@ -5,7 +5,7 @@ import { AnyAction } from "redux";
 
 import { TStore } from "../store";
 import { Member, Pointing } from "../types";
-import { pointPresentation } from "../actions"
+import { setPointing } from "../actions"
 import PointingComponent from "./Pointing";
 
 import "./Presenter.css";
@@ -14,7 +14,7 @@ interface IProps {
   localPeer?: Peer,
   pointings: Pointing[],
   presenter?: Member,
-  pointPresentation: any,
+  setPointing: any,
 }
 
 class Presenter extends React.PureComponent<IProps> {
@@ -32,7 +32,7 @@ class Presenter extends React.PureComponent<IProps> {
     const { clientWidth, clientHeight } = target;
     const x = layerX / clientWidth;
     const y = layerY / clientHeight;
-    this.props.pointPresentation(x, y);
+    this.props.setPointing(x, y);
   }
 
   _renderPointings() {
@@ -100,8 +100,8 @@ const mapStateToProps = (store: TStore) => {
 }
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
-  pointPresentation: (x: number, y: number) => {
-    dispatch(pointPresentation(x, y));
+  setPointing: (x: number, y: number) => {
+    dispatch(setPointing(x, y));
   },
 });
 

@@ -10,14 +10,18 @@ import { TStore } from "./store";
 const actionCreator = actionCreatorFactory()
 
 export const AddPeerAction = actionCreator<{ peerId: string, stream: any }>("ADD_PEER");
+export const AddPointingAction = actionCreator.async<
+  { peerId: string, x: number, y: number },
+  { peerId: string, x: number, y: number },
+  { error: any }
+>("ADD_POINTING");
 export const ParticipateAction = actionCreator.async<
   {}, { localPeer: Peer, localStream: MediaStream, room: any }, { error: any }
 >("PARTICIPATE");
-export const PointPresentationAcrion = actionCreator.async<
-  {}, {}, { error: any }
->("POINT_PRESENTATION");
 export const RemovePeerAction = actionCreator<{ peerId: string }>("REMOVE_PEER");
+export const RemovePointingAction = actionCreator<{ peerId: string }>("REMOVE_POINTING");
 export const SelectPeerAction = actionCreator.async<{}, {}, { error: any }>("SELECT_PEER");
+export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>("SET_POINTING");
 export const SwitchCameraAction = actionCreator.async<
   {}, { localStream: MediaStream }, { error: any }
 >("SWITCH_CAMERA");
@@ -29,8 +33,8 @@ export const ToggleCameraMutingAction = actionCreator.async<
 >("TOGGLE_CAMERA_MUTING");
 export const OnPeerSelectedAction =
   actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
-export const OnPresentationPointedAction =
-  actionCreator<{ peerId: string, x: number, y: number }>("ON_PRESENTATION_POINTED");
+
+const pointingTimerMap = new Map();
 
 export function participate(key: string, network: "mesh" | "sfu", roomId: string) {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
@@ -66,26 +70,20 @@ export function participate(key: string, network: "mesh" | "sfu", roomId: string
   }
 }
 
-export function pointPresentation(x: number, y: number) {
+function addPointing(peerId: string, x: number, y: number) {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
-    const params = {};
+    const params = { peerId, x, y };
 
     try {
-      dispatch(PointPresentationAcrion.started(params));
+      dispatch(AddPointingAction.started(params));
 
-      const state = getState()?.state;
+      clearTimeout(pointingTimerMap.get(peerId));
+      const timerId = setTimeout(() => dispatch(RemovePointingAction({ peerId })), 4000);
+      pointingTimerMap.set(peerId, timerId);
 
-      const peerId = state.localPeer?.id;
-
-      if (peerId) {
-        state.room?.send({ type: "presentation-pointed", peerId, x, y });
-        // As the room.send does not send to the local peer, update manually.
-        dispatch(OnPresentationPointedAction({ peerId, x, y }));
-      }
-
-      dispatch(PointPresentationAcrion.done({ result: {}, params }));
+      dispatch(AddPointingAction.done({ result: params, params }));
     } catch (error) {
-      dispatch(PointPresentationAcrion.failed({ error, params }));
+      dispatch(AddPointingAction.failed({ error, params }));
     }
   }
 }
@@ -107,6 +105,30 @@ export function selectPeer(peerId: string) {
       dispatch(SelectPeerAction.done({ result: {}, params }));
     } catch (error) {
       dispatch(SelectPeerAction.failed({ error, params }));
+    }
+  }
+}
+
+export function setPointing(x: number, y: number) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+    const params = {};
+
+    try {
+      dispatch(SetPointintAcrion.started(params));
+
+      const state = getState()?.state;
+
+      const peerId = state.localPeer?.id;
+
+      if (peerId) {
+        state.room?.send({ type: "pointing-added", peerId, x, y });
+        // As the room.send does not send to the local peer, update manually.
+        dispatch(addPointing(peerId, x, y));
+      }
+
+      dispatch(SetPointintAcrion.done({ result: {}, params }));
+    } catch (error) {
+      dispatch(SetPointintAcrion.failed({ error, params }));
     }
   }
 }
@@ -202,8 +224,8 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
       dispatch(OnPeerSelectedAction({ peerId: data.peerId }));
       break;
     }
-    case "presentation-pointed": {
-      dispatch(OnPresentationPointedAction({ peerId: data.peerId, x: data.x, y: data.y }));
+    case "pointing-added": {
+      dispatch(addPointing(data.peerId, data.x, data.y));
       break;
     }
   }
