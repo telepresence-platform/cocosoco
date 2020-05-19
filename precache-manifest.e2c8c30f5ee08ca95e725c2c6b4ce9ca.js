@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "08e549e3c98f46a9ba44baca9bfa3a98",
+    "revision": "8bcdd0cb0d52edb0fb2f5d342b922b1d",
     "url": "/cocosoco/index.html"
   },
   {
-    "revision": "f4276aa916783afb78e7",
-    "url": "/cocosoco/static/css/main.19be8e55.chunk.css"
+    "revision": "79c829eadbdffcc1b09d",
+    "url": "/cocosoco/static/css/main.dc37fc5a.chunk.css"
   },
   {
     "revision": "692e44fc01097f3d5459",
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cocosoco/static/js/2.336b8ded.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "f4276aa916783afb78e7",
-    "url": "/cocosoco/static/js/main.60dfcb61.chunk.js"
+    "revision": "79c829eadbdffcc1b09d",
+    "url": "/cocosoco/static/js/main.7e057c4b.chunk.js"
   },
   {
     "revision": "f97a5b8249d84b244e04",
@@ -44,7 +44,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cocosoco/static/media/CameraSwitching.e1a723d2.svg"
   },
   {
-    "revision": "4cb62ad4f7dcdb7ba50596fe780223fe",
-    "url": "/cocosoco/static/media/Pointing.4cb62ad4.png"
+    "revision": "c29bd356145ece13cc8b9acc313f4484",
+    "url": "/cocosoco/static/media/Pointing.c29bd356.png"
   }
 ]);
