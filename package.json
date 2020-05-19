@@ -1,6 +1,7 @@
 {
   "name": "cocosoco",
   "version": "0.1.0",
+  "homepage": "https://telepresence-platform.github.io/cocosoco",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -25,7 +26,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,6 +47,7 @@
   "devDependencies": {
     "@types/react-redux": "^7.1.7",
     "@types/redux-thunk": "^2.1.0",
-    "@types/skyway": "0.0.29"
+    "@types/skyway": "0.0.29",
+    "gh-pages": "^2.2.0"
   }
 }
