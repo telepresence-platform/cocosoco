@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/cocosoco/static/css/main.dc37fc5a.chunk.css",
+    "main.css": "/cocosoco/static/css/main.89b6154c.chunk.css",
     "main.js": "/cocosoco/static/js/main.7e057c4b.chunk.js",
     "main.js.map": "/cocosoco/static/js/main.7e057c4b.chunk.js.map",
     "runtime-main.js": "/cocosoco/static/js/runtime-main.c896fc62.js",
@@ -8,9 +8,9 @@
     "static/js/2.336b8ded.chunk.js": "/cocosoco/static/js/2.336b8ded.chunk.js",
     "static/js/2.336b8ded.chunk.js.map": "/cocosoco/static/js/2.336b8ded.chunk.js.map",
     "index.html": "/cocosoco/index.html",
-    "precache-manifest.e2c8c30f5ee08ca95e725c2c6b4ce9ca.js": "/cocosoco/precache-manifest.e2c8c30f5ee08ca95e725c2c6b4ce9ca.js",
+    "precache-manifest.0903b02685ddbef5aec614a6dc96aa54.js": "/cocosoco/precache-manifest.0903b02685ddbef5aec614a6dc96aa54.js",
     "service-worker.js": "/cocosoco/service-worker.js",
-    "static/css/main.dc37fc5a.chunk.css.map": "/cocosoco/static/css/main.dc37fc5a.chunk.css.map",
+    "static/css/main.89b6154c.chunk.css.map": "/cocosoco/static/css/main.89b6154c.chunk.css.map",
     "static/js/2.336b8ded.chunk.js.LICENSE.txt": "/cocosoco/static/js/2.336b8ded.chunk.js.LICENSE.txt",
     "static/media/AudioMuting.svg": "/cocosoco/static/media/AudioMuting.728874bb.svg",
     "static/media/AudioMutingDisabled.svg": "/cocosoco/static/media/AudioMutingDisabled.288ed0b3.svg",
@@ -22,7 +22,7 @@
   "entrypoints": [
     "static/js/runtime-main.c896fc62.js",
     "static/js/2.336b8ded.chunk.js",
-    "static/css/main.dc37fc5a.chunk.css",
+    "static/css/main.89b6154c.chunk.css",
     "static/js/main.7e057c4b.chunk.js"
   ]
 }
