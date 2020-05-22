@@ -1,9 +1,7 @@
 .tool-item {
-  width: 100px;
-  height: 100px;
+  width: 13vw;
+  height: 13vw;
+  max-width: 100px;
+  max-height: 100px;
   pointer-events: auto;
-}
-
-.tool-item:first-child {
-  margin-right: 16px;
 }
