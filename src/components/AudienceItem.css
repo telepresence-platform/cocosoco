@@ -1,9 +1,14 @@
 .audience-item {
   clip-path: circle(36%);
-  height: 120px;
-  width: 120px;
+  width: 14vw;
+  height: 14vw;
+  max-width: 120px;
+  max-height: 120px;
   background-color: #f9f9fa;
   pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .audience-item--selected {
@@ -13,9 +18,8 @@
 .audience-item__video {
   pointer-events: none;
   clip-path: circle(36%);
-  height: 110px;
-  width: 110px;
-  position: relative;
-  top: 5px;
-  left: 5px;
+  width: 13vw;
+  height: 13vw;
+  max-width: 110px;
+  max-height: 110px;
 }
