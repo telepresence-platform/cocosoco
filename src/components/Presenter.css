@@ -9,7 +9,7 @@
 .react-transform-component {
   height: 100%;
   /* in order to keep the width of video */
-  overflow: unset;
+  overflow: unset !important;
   clip-path: content-box;
 }
 
