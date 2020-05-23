@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "64e9c1b2f84c3f12a4f32a992c62a4b7",
+    "revision": "2fca529f956eca2e004243923a3e1bc3",
     "url": "/cocosoco/index.html"
   },
   {
-    "revision": "b10fcf277fc8e8a28bbd",
-    "url": "/cocosoco/static/css/main.89b6154c.chunk.css"
+    "revision": "bde542a50a17e1ad4141",
+    "url": "/cocosoco/static/css/main.ae97e0be.chunk.css"
   },
   {
-    "revision": "692e44fc01097f3d5459",
-    "url": "/cocosoco/static/js/2.336b8ded.chunk.js"
+    "revision": "0905c56ad405547b5530",
+    "url": "/cocosoco/static/js/2.8aa07e0c.chunk.js"
   },
   {
     "revision": "d628b86b05225b4ee57b19ea2088d87a",
-    "url": "/cocosoco/static/js/2.336b8ded.chunk.js.LICENSE.txt"
+    "url": "/cocosoco/static/js/2.8aa07e0c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "b10fcf277fc8e8a28bbd",
-    "url": "/cocosoco/static/js/main.7e057c4b.chunk.js"
+    "revision": "bde542a50a17e1ad4141",
+    "url": "/cocosoco/static/js/main.ddb68310.chunk.js"
   },
   {
     "revision": "f97a5b8249d84b244e04",
