@@ -8,3 +8,9 @@ export interface Pointing {
   x: number,
   y: number,
 }
+
+export interface Transform {
+  x: number,
+  y: number,
+  scale: number,
+}

@@ -22,6 +22,7 @@ export const RemovePeerAction = actionCreator<{ peerId: string }>("REMOVE_PEER")
 export const RemovePointingAction = actionCreator<{ peerId: string }>("REMOVE_POINTING");
 export const SelectPeerAction = actionCreator.async<{}, {}, { error: any }>("SELECT_PEER");
 export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>("SET_POINTING");
+export const SetTransformAcrion = actionCreator.async<{}, {}, { error: any }>("SET_TRANSFORM");
 export const SwitchCameraAction = actionCreator.async<
   {}, { localStream: MediaStream }, { error: any }
 >("SWITCH_CAMERA");
@@ -33,6 +34,8 @@ export const ToggleCameraMutingAction = actionCreator.async<
 >("TOGGLE_CAMERA_MUTING");
 export const OnPeerSelectedAction =
   actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
+export const OnTransformChangedAction =
+  actionCreator<{ x: number, y: number, scale: number  }>("ON_TRANSFORM_CHANGED");
 
 const pointingTimerMap = new Map();
 
@@ -133,6 +136,23 @@ export function setPointing(x: number, y: number) {
   }
 }
 
+export function setTransform(x: number, y: number, scale: number) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+    const params = {};
+
+    try {
+      dispatch(SetTransformAcrion.started(params));
+
+      const state = getState()?.state;
+      state.room?.send({ type: "transform-changed", x, y, scale });
+
+      dispatch(SetTransformAcrion.done({ result: {}, params }));
+    } catch (error) {
+      dispatch(SetTransformAcrion.failed({ error, params }));
+    }
+  }
+}
+
 export function switchCamera() {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
     const params = {};
@@ -226,6 +246,10 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
     }
     case "pointing-added": {
       dispatch(addPointing(data.peerId, data.x, data.y));
+      break;
+    }
+    case "transform-changed": {
+      dispatch(OnTransformChangedAction({ x: data.x, y: data.y, scale: data.scale }));
       break;
     }
   }

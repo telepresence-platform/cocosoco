@@ -10,8 +10,9 @@ import {
   ToggleAudioMutingAction,
   ToggleCameraMutingAction,
   OnPeerSelectedAction,
+  OnTransformChangedAction,
 } from "./actions";
-import { Member, Pointing } from "./types";
+import { Member, Pointing, Transform } from "./types";
 
 export interface IState {
   audiences: Member[],
@@ -22,6 +23,7 @@ export interface IState {
   room?: SFURoom | MeshRoom,
   pointings: Pointing[],
   presenter?: Member,
+  transform: Transform,
   // Don't use this. The reason why we need this variable is because the `peer-selected`
   // event and AddPeerAction timing after joining the room is racing.
   _selectedPeerId?: string,
@@ -32,6 +34,7 @@ const initialState: IState = {
   isAudioEnabled: true,
   isCameraEnabled: true,
   pointings: [],
+  transform: { x: 0, y: 0, scale: 1 },
 }
 
 export const reducer = reducerWithInitialState(initialState)
@@ -41,8 +44,9 @@ export const reducer = reducerWithInitialState(initialState)
 
     // As the presenter peer joined after firing `peer-selected` event, set as a presenter.
     const presenter = state._selectedPeerId === peerId ? audience : state.presenter;
+    const transform = presenter === state.presenter ? state.transform : initialState.transform;
 
-    return Object.assign({}, state, { audiences, presenter });
+    return Object.assign({}, state, { audiences, presenter, transform });
   })
   .case(AddPointingAction.done, (state, { result }) => {
     const { peerId, x, y } = result;
@@ -99,5 +103,12 @@ export const reducer = reducerWithInitialState(initialState)
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
 
-    return Object.assign({}, state, { presenter, _selectedPeerId: peerId });
+    return Object.assign({}, state, {
+      presenter,
+      transform: initialState.transform,
+      _selectedPeerId: peerId,
+    });
+  })
+  .case(OnTransformChangedAction, (state, { x, y, scale }) => {
+    return Object.assign({}, state, { transform: { x, y, scale } });
   })
