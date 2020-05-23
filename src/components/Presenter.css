@@ -3,8 +3,22 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+}
+
+.react-transform-component {
+  height: 100%;
+  /* in order to keep the width of video */
+  overflow: unset;
+  clip-path: content-box;
+}
+
+.react-transform-element {
+  height: 100%;
+  pointer-events: none;
 }
 
 .presenter__video {
   height: 100%;
+  pointer-events: none;
 }
