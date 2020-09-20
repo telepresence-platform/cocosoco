@@ -4,7 +4,7 @@ export interface Member {
 }
 
 export interface Pointing {
-  peerId: string,
+  audience: Member,
   x: number,
   y: number,
 }

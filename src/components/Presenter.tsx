@@ -106,12 +106,12 @@ class Presenter extends React.PureComponent<IProps> {
 
     const { pointings } = this.props;
     return pointings.map(p => {
-      const peerId = p.peerId;
+      const audience = p.audience;
       const x = area.offsetLeft + area.clientWidth * p.x;
       const y = area.offsetTop + area.clientHeight * p.y;
       const radian = Math.atan2(p.x - 0.5, -(p.y - 0.5));
 
-      return <PointingComponent key={peerId} peerId={peerId} x={x} y={y} radian={radian}/>;
+      return <PointingComponent key={audience.peerId} audience={audience} x={x} y={y} radian={radian}/>;
     });
   }
 

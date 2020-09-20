@@ -50,9 +50,10 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(AddPointingAction.done, (state, { result }) => {
     const { peerId, x, y } = result;
-    const pointings = state.pointings.filter(a => a.peerId !== peerId);
+    const pointings = state.pointings.filter(p => p.audience.peerId !== peerId);
+    const audience = state.audiences.find(a => a.peerId === peerId);
 
-    return Object.assign({}, state, { pointings: [...pointings, { peerId, x, y }] });
+    return Object.assign({}, state, { pointings: [...pointings, { audience, x, y }] });
   })
   .case(ParticipateAction.done, (state, { result }) => {
     const { localPeer, localStream, room } = result;
@@ -72,7 +73,7 @@ export const reducer = reducerWithInitialState(initialState)
     return Object.assign({}, state, { audiences, presenter });
   })
   .case(RemovePointingAction, (state, { peerId }) => {
-    const pointings = state.pointings.filter(a => a.peerId !== peerId);
+    const pointings = state.pointings.filter(p => p.audience.peerId !== peerId);
 
     return Object.assign({}, state, { pointings });
   })
