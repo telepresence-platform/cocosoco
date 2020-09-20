@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "e21d7138cd7b7d663cc1bfea9e5c7571",
+    "revision": "813998c1c8e9017434beab811222fdde",
     "url": "/cocosoco/index.html"
   },
   {
-    "revision": "3667157dc9fc9bf0c55e",
-    "url": "/cocosoco/static/css/main.0e04a7b9.chunk.css"
+    "revision": "5871ced5166377df4247",
+    "url": "/cocosoco/static/css/main.0f805b99.chunk.css"
   },
   {
     "revision": "0905c56ad405547b5530",
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/cocosoco/static/js/2.8aa07e0c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "3667157dc9fc9bf0c55e",
-    "url": "/cocosoco/static/js/main.ddb68310.chunk.js"
+    "revision": "5871ced5166377df4247",
+    "url": "/cocosoco/static/js/main.b1a80432.chunk.js"
   },
   {
     "revision": "f97a5b8249d84b244e04",
