@@ -32,6 +32,9 @@ export const ToggleAudioMutingAction = actionCreator.async<
 export const ToggleCameraMutingAction = actionCreator.async<
   {}, { isEnabled: boolean }, { error: any }
 >("TOGGLE_CAMERA_MUTING");
+export const ToggleMapMutingAction = actionCreator.async<
+  {}, { isEnabled: boolean }, { error: any }
+>("TOGGLE_MAP_MUTING");
 export const OnPeerSelectedAction =
   actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
 export const OnTransformChangedAction =
@@ -226,6 +229,24 @@ export function toggleCameraMuting() {
       dispatch(ToggleCameraMutingAction.done({ result, params }));
     } catch (error) {
       dispatch(ToggleCameraMutingAction.failed({ error, params }));
+    }
+  }
+}
+export function toggleMapMuting() {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+    const params = {};
+
+    try {
+      dispatch(ToggleMapMutingAction.started(params));
+
+      const state = getState()?.state;
+      const isEnabled = !state?.isMapEnabled;
+
+      const result = { isEnabled };
+
+      dispatch(ToggleMapMutingAction.done({ result, params }));
+    } catch (error) {
+      dispatch(ToggleMapMutingAction.failed({ error, params }));
     }
   }
 }

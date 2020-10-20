@@ -9,6 +9,7 @@ import {
   SwitchCameraAction,
   ToggleAudioMutingAction,
   ToggleCameraMutingAction,
+  ToggleMapMutingAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
 } from "./actions";
@@ -18,6 +19,7 @@ export interface IState {
   audiences: Member[],
   isAudioEnabled: boolean,
   isCameraEnabled: boolean,
+  isMapEnabled: boolean,
   localPeer?: Peer,
   localStream?: MediaStream,
   room?: SFURoom | MeshRoom,
@@ -33,6 +35,7 @@ const initialState: IState = {
   audiences: [],
   isAudioEnabled: true,
   isCameraEnabled: true,
+  isMapEnabled: true,
   pointings: [],
   transform: { x: 0, y: 0, scale: 1 },
 }
@@ -100,6 +103,11 @@ export const reducer = reducerWithInitialState(initialState)
     const { isEnabled } = result;
 
     return Object.assign({}, state, { isCameraEnabled: isEnabled });
+  })
+  .case(ToggleMapMutingAction.done, (state, { result }) => {
+    const { isEnabled } = result;
+
+    return Object.assign({}, state, { isMapEnabled: isEnabled });
   })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
