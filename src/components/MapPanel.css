@@ -1,0 +1,15 @@
+.mappanel {
+  display: flex;
+  background: #ffff00;
+  position: absolute;
+  bottom: 2vw;
+  right: 2vw;
+  justify-content: center;
+  align-items: center;
+  width: 30vw;
+  height: 30vh;
+}
+.mappanel--disabled {
+  display: none;
+}
+
