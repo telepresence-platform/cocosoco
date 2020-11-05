@@ -5,15 +5,21 @@ import { AnyAction } from "redux";
 
 import { TStore } from "../store";
 import { participate } from "../actions"
+import { InitializeMap } from "../actions"
 
 import "./Participation.css";
 
 interface IProps {
   participate: any
+  InitializeMap: any
 }
 
 interface IState {
   key: string | null,
+  mapkey: string | null,
+  lat: number,
+  lng: number,
+  defaultZoom: number,
   network: string | null,
   room: string | null,
   error: string | null,
@@ -23,11 +29,14 @@ interface IState {
 class Participation extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-
     this._onClick = this._onClick.bind(this);
 
     const url = new URL(document.URL);
     const key = url.searchParams.get("key");
+    const mapkey = url.searchParams.get("mapkey");
+    const lat = 35.7139014;
+    const lng = 139.7601034;
+    const defaultZoom = 12;
     const network = url.searchParams.get("network");
     const room = url.searchParams.get("room");
 
@@ -36,16 +45,19 @@ class Participation extends React.PureComponent<IProps, IState> {
       error = "No specific key, network or room"
     } else if (network !== "sfu" && network !== "mesh") {
       error = "Network should be 'sfu' or 'mesh'";
+    } else if (!mapkey) {
+      error = "No specific GoogleMapAPIkey";
     }
 
-    this.state = { key, network, room, error };
+    this.state = { key, mapkey, lat, lng, defaultZoom, network, room, error };
   }
 
   _onClick(e: React.MouseEvent) {
-    const { participate } = this.props;
-    const { key, network, room } = this.state;
+    const { participate, InitializeMap } = this.props;
+    const { key, mapkey, lat, lng, defaultZoom, network, room } = this.state;
     this.setState({ isParticipating: true });
     participate(key, network, room);
+    InitializeMap(mapkey, lat, lng, defaultZoom);
   }
 
   render() {
@@ -73,6 +85,9 @@ class Participation extends React.PureComponent<IProps, IState> {
 const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
   participate: (key: string, network: "mesh" | "sfu", room: string) => {
     dispatch(participate(key, network, room));
+  },
+  InitializeMap: (mapkey: string, lat: number, lng: number, defaultZoom: number) => {
+    dispatch(InitializeMap(mapkey,lat, lng, defaultZoom));
   },
 });
 

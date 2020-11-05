@@ -35,6 +35,9 @@ export const ToggleCameraMutingAction = actionCreator.async<
 export const ToggleMapMutingAction = actionCreator.async<
   {}, { isEnabled: boolean }, { error: any }
 >("TOGGLE_MAP_MUTING");
+export const InitializeMapAction = actionCreator.async<
+  {}, { mapkey: string, lat: number, lng: number, defaultZoom: number}, { error: any }
+>("INITIALIZE_MAP");
 export const OnPeerSelectedAction =
   actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
 export const OnTransformChangedAction =
@@ -251,6 +254,20 @@ export function toggleMapMuting() {
   }
 }
 
+export function InitializeMap(mapkey: string, lat: number, lng: number, defaultZoom: number) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+    const params = {};
+
+    try {
+      dispatch(InitializeMapAction.started(params));
+
+      const result = { mapkey, lat, lng, defaultZoom };
+      dispatch(InitializeMapAction.done({ result, params }));
+    } catch (error) {
+      dispatch(InitializeMapAction.failed({ error, params }));
+    }
+  }
+}
 function onStream(dispatch: ThunkDispatch<TStore, void, AnyAction>, store: TStore, stream: any) {
   dispatch(AddPeerAction({ peerId: stream.peerId, stream }));
   // Tell who is a presenter now, to peer joined newly.

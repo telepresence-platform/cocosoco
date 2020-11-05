@@ -12,6 +12,7 @@ import {
   ToggleMapMutingAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
+  InitializeMapAction,
 } from "./actions";
 import { Member, Pointing, Transform } from "./types";
 
@@ -29,6 +30,10 @@ export interface IState {
   // Don't use this. The reason why we need this variable is because the `peer-selected`
   // event and AddPeerAction timing after joining the room is racing.
   _selectedPeerId?: string,
+  mapkey: string,
+  lat: number,
+  lng: number,
+  defaultZoom: number,
 }
 
 const initialState: IState = {
@@ -38,6 +43,10 @@ const initialState: IState = {
   isMapEnabled: true,
   pointings: [],
   transform: { x: 0, y: 0, scale: 1 },
+  mapkey: '',
+  lat: 0,
+  lng: 0,
+  defaultZoom: 0,
 }
 
 export const reducer = reducerWithInitialState(initialState)
@@ -117,6 +126,10 @@ export const reducer = reducerWithInitialState(initialState)
       transform: initialState.transform,
       _selectedPeerId: peerId,
     });
+  })
+  .case(InitializeMapAction.done, (state, { result }) => {
+    const { mapkey , lat, lng, defaultZoom} = result;
+    return Object.assign({}, state, { mapkey: mapkey, lat: lat, lng: lng, defaultZoom: defaultZoom});
   })
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
