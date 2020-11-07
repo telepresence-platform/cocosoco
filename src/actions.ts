@@ -36,7 +36,7 @@ export const ToggleMapMutingAction = actionCreator.async<
   {}, { isEnabled: boolean }, { error: any }
 >("TOGGLE_MAP_MUTING");
 export const InitializeMapAction = actionCreator.async<
-  {}, { mapkey: string, lat: number, lng: number, defaultZoom: number}, { error: any }
+  {}, { key: string, lat: number, lng: number, defaultZoom: number}, { error: any }
 >("INITIALIZE_MAP");
 export const OnPeerSelectedAction =
   actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
@@ -254,14 +254,14 @@ export function toggleMapMuting() {
   }
 }
 
-export function InitializeMap(mapkey: string, lat: number, lng: number, defaultZoom: number) {
+export function InitializeMap(key: string, lat: number, lng: number, defaultZoom: number) {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
     const params = {};
 
     try {
       dispatch(InitializeMapAction.started(params));
 
-      const result = { mapkey, lat, lng, defaultZoom };
+      const result = { key, lat, lng, defaultZoom };
       dispatch(InitializeMapAction.done({ result, params }));
     } catch (error) {
       dispatch(InitializeMapAction.failed({ error, params }));

@@ -1,3 +1,10 @@
+export interface Map {
+  key: string,
+  lat: number,
+  lng: number,
+  defaultZoom: number,
+}
+
 export interface Member {
   peerId: string,
   stream: any,
