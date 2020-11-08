@@ -11,10 +11,10 @@ class Room extends React.PureComponent {
   render() {
     return (
       <section className="room">
-        <ToolList/>
-        <Presenter/>
-        <MapPanel/>
-        <AudienceList/>
+        <ToolList />
+        <Presenter />
+        <MapPanel />
+        <AudienceList />
       </section>
     );
   }

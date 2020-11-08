@@ -11,8 +11,8 @@ import logoDisabled from "./MapMutingDisabled.svg";
 import "./MapMuting.css";
 
 interface IProps {
-  isMapEnabled: boolean,
-  toggleMapMuting: any,
+  isMapEnabled: boolean;
+  toggleMapMuting: any;
 }
 
 class MapMuting extends React.PureComponent<IProps> {
@@ -31,10 +31,12 @@ class MapMuting extends React.PureComponent<IProps> {
 const mapStateToProps = (store: TStore) => {
   return {
     isMapEnabled: store.state.isMapEnabled,
-  }
-}
+  };
+};
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<TStore, void, AnyAction>
+) => ({
   toggleMapMuting: () => {
     dispatch(toggleMapMuting());
   },

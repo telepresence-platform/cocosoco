@@ -17,20 +17,20 @@ import {
 import { Map, Member, Pointing, Transform } from "./types";
 
 export interface IState {
-  audiences: Member[],
-  isAudioEnabled: boolean,
-  isCameraEnabled: boolean,
-  isMapEnabled: boolean,
-  localPeer?: Peer,
-  localStream?: MediaStream,
-  room?: SFURoom | MeshRoom,
-  pointings: Pointing[],
-  map?: Map,
-  presenter?: Member,
-  transform: Transform,
+  audiences: Member[];
+  isAudioEnabled: boolean;
+  isCameraEnabled: boolean;
+  isMapEnabled: boolean;
+  localPeer?: Peer;
+  localStream?: MediaStream;
+  room?: SFURoom | MeshRoom;
+  pointings: Pointing[];
+  map?: Map;
+  presenter?: Member;
+  transform: Transform;
   // Don't use this. The reason why we need this variable is because the `peer-selected`
   // event and AddPeerAction timing after joining the room is racing.
-  _selectedPeerId?: string,
+  _selectedPeerId?: string;
 }
 
 const initialState: IState = {
@@ -40,7 +40,7 @@ const initialState: IState = {
   isMapEnabled: true,
   pointings: [],
   transform: { x: 0, y: 0, scale: 1 },
-}
+};
 
 export const reducer = reducerWithInitialState(initialState)
   .case(AddPeerAction, (state, { peerId, stream }) => {
@@ -48,8 +48,10 @@ export const reducer = reducerWithInitialState(initialState)
     const audiences = [...state.audiences, audience];
 
     // As the presenter peer joined after firing `peer-selected` event, set as a presenter.
-    const presenter = state._selectedPeerId === peerId ? audience : state.presenter;
-    const transform = presenter === state.presenter ? state.transform : initialState.transform;
+    const presenter =
+      state._selectedPeerId === peerId ? audience : state.presenter;
+    const transform =
+      presenter === state.presenter ? state.transform : initialState.transform;
 
     return Object.assign({}, state, { audiences, presenter, transform });
   })
@@ -58,7 +60,9 @@ export const reducer = reducerWithInitialState(initialState)
     const pointings = state.pointings.filter(p => p.audience.peerId !== peerId);
     const audience = state.audiences.find(a => a.peerId === peerId);
 
-    return Object.assign({}, state, { pointings: [...pointings, { audience, x, y }] });
+    return Object.assign({}, state, {
+      pointings: [...pointings, { audience, x, y }],
+    });
   })
   .case(ParticipateAction.done, (state, { result }) => {
     const { localPeer, localStream, room } = result;
@@ -69,11 +73,17 @@ export const reducer = reducerWithInitialState(initialState)
     };
     const audiences = [audience];
 
-    return Object.assign({}, state, { audiences, localPeer, localStream, room });
+    return Object.assign({}, state, {
+      audiences,
+      localPeer,
+      localStream,
+      room,
+    });
   })
   .case(RemovePeerAction, (state, { peerId }) => {
     const audiences = state.audiences.filter(a => a.peerId !== peerId);
-    const presenter = state.presenter?.peerId === peerId ? null : state.presenter;
+    const presenter =
+      state.presenter?.peerId === peerId ? null : state.presenter;
 
     return Object.assign({}, state, { audiences, presenter });
   })
@@ -86,13 +96,14 @@ export const reducer = reducerWithInitialState(initialState)
     const { localStream } = result;
     const peerId = state.localPeer?.id;
 
-    const audiences = state.audiences.map(
-      a => a.peerId === peerId ? { peerId, stream: localStream } : a
+    const audiences = state.audiences.map(a =>
+      a.peerId === peerId ? { peerId, stream: localStream } : a
     );
 
-    const presenter = state.presenter?.peerId === peerId
-                        ? { peerId, stream: localStream }
-                        : state.presenter;
+    const presenter =
+      state.presenter?.peerId === peerId
+        ? { peerId, stream: localStream }
+        : state.presenter;
 
     return Object.assign({}, state, { audiences, localStream, presenter });
   })
@@ -121,9 +132,9 @@ export const reducer = reducerWithInitialState(initialState)
     });
   })
   .case(InitializeMapAction.done, (state, { result }) => {
-    const { key , lat, lng, defaultZoom} = result;
-    return Object.assign({}, state, { map: { key, lat, lng, defaultZoom }});
+    const { key, lat, lng, defaultZoom } = result;
+    return Object.assign({}, state, { map: { key, lat, lng, defaultZoom } });
   })
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
-  })
+  });

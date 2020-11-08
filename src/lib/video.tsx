@@ -8,7 +8,7 @@ async function getDevices() {
 export async function nextVideoStream() {
   const devices = await getDevices();
 
-  const nextIndex = currentIndex === devices.length -1 ? 0 : currentIndex + 1;
+  const nextIndex = currentIndex === devices.length - 1 ? 0 : currentIndex + 1;
   const nextDevice = devices[nextIndex];
 
   const deviceId = nextDevice.deviceId;

@@ -7,46 +7,91 @@ import { actionCreatorFactory } from "../node_modules/typescript-fsa";
 import { nextVideoStream } from "./lib/video";
 import { TStore } from "./store";
 
-const actionCreator = actionCreatorFactory()
+const actionCreator = actionCreatorFactory();
 
-export const AddPeerAction = actionCreator<{ peerId: string, stream: any }>("ADD_PEER");
+export const AddPeerAction = actionCreator<{
+  peerId: string;
+  stream: any;
+}>("ADD_PEER");
 export const AddPointingAction = actionCreator.async<
-  { peerId: string, x: number, y: number },
-  { peerId: string, x: number, y: number },
+  { peerId: string; x: number; y: number },
+  { peerId: string; x: number; y: number },
   { error: any }
 >("ADD_POINTING");
 export const ParticipateAction = actionCreator.async<
-  {}, { localPeer: Peer, localStream: MediaStream, room: any }, { error: any }
+  {},
+  {
+    localPeer: Peer;
+    localStream: MediaStream;
+    room: any;
+  },
+  { error: any }
 >("PARTICIPATE");
-export const RemovePeerAction = actionCreator<{ peerId: string }>("REMOVE_PEER");
-export const RemovePointingAction = actionCreator<{ peerId: string }>("REMOVE_POINTING");
-export const SelectPeerAction = actionCreator.async<{}, {}, { error: any }>("SELECT_PEER");
-export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>("SET_POINTING");
-export const SetTransformAcrion = actionCreator.async<{}, {}, { error: any }>("SET_TRANSFORM");
+export const RemovePeerAction = actionCreator<{ peerId: string }>(
+  "REMOVE_PEER"
+);
+export const RemovePointingAction = actionCreator<{ peerId: string }>(
+  "REMOVE_POINTING"
+);
+export const SelectPeerAction = actionCreator.async<{}, {}, { error: any }>(
+  "SELECT_PEER"
+);
+export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>(
+  "SET_POINTING"
+);
+export const SetTransformAcrion = actionCreator.async<{}, {}, { error: any }>(
+  "SET_TRANSFORM"
+);
 export const SwitchCameraAction = actionCreator.async<
-  {}, { localStream: MediaStream }, { error: any }
+  {},
+  { localStream: MediaStream },
+  { error: any }
 >("SWITCH_CAMERA");
 export const ToggleAudioMutingAction = actionCreator.async<
-  {}, { isEnabled: boolean }, { error: any }
+  {},
+  { isEnabled: boolean },
+  { error: any }
 >("TOGGLE_AUDIO_MUTING");
 export const ToggleCameraMutingAction = actionCreator.async<
-  {}, { isEnabled: boolean }, { error: any }
+  {},
+  { isEnabled: boolean },
+  { error: any }
 >("TOGGLE_CAMERA_MUTING");
 export const ToggleMapMutingAction = actionCreator.async<
-  {}, { isEnabled: boolean }, { error: any }
+  {},
+  { isEnabled: boolean },
+  { error: any }
 >("TOGGLE_MAP_MUTING");
 export const InitializeMapAction = actionCreator.async<
-  {}, { key: string, lat: number, lng: number, defaultZoom: number}, { error: any }
+  {},
+  {
+    key: string;
+    lat: number;
+    lng: number;
+    defaultZoom: number;
+  },
+  { error: any }
 >("INITIALIZE_MAP");
-export const OnPeerSelectedAction =
-  actionCreator<{ peerId: string }>("ON_PEER_SELECTED");
-export const OnTransformChangedAction =
-  actionCreator<{ x: number, y: number, scale: number  }>("ON_TRANSFORM_CHANGED");
+export const OnPeerSelectedAction = actionCreator<{
+  peerId: string;
+}>("ON_PEER_SELECTED");
+export const OnTransformChangedAction = actionCreator<{
+  x: number;
+  y: number;
+  scale: number;
+}>("ON_TRANSFORM_CHANGED");
 
 const pointingTimerMap = new Map();
 
-export function participate(key: string, network: "mesh" | "sfu", roomId: string) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+export function participate(
+  key: string,
+  network: "mesh" | "sfu",
+  roomId: string
+) {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = { key, network, roomId };
     try {
       dispatch(ParticipateAction.started(params));
@@ -59,7 +104,7 @@ export function participate(key: string, network: "mesh" | "sfu", roomId: string
 
       const room = localPeer.joinRoom(roomId, {
         mode: network,
-        stream: localStream
+        stream: localStream,
       });
 
       room.on("peerLeave", peerId => dispatch(RemovePeerAction({ peerId })));
@@ -76,29 +121,35 @@ export function participate(key: string, network: "mesh" | "sfu", roomId: string
     } catch (error) {
       dispatch(ParticipateAction.failed({ error, params }));
     }
-  }
+  };
 }
 
 function addPointing(peerId: string, x: number, y: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
     const params = { peerId, x, y };
 
     try {
       dispatch(AddPointingAction.started(params));
 
       clearTimeout(pointingTimerMap.get(peerId));
-      const timerId = setTimeout(() => dispatch(RemovePointingAction({ peerId })), 4000);
+      const timerId = setTimeout(
+        () => dispatch(RemovePointingAction({ peerId })),
+        4000
+      );
       pointingTimerMap.set(peerId, timerId);
 
       dispatch(AddPointingAction.done({ result: params, params }));
     } catch (error) {
       dispatch(AddPointingAction.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function selectPeer(peerId: string) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -115,11 +166,14 @@ export function selectPeer(peerId: string) {
     } catch (error) {
       dispatch(SelectPeerAction.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function setPointing(x: number, y: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -139,11 +193,14 @@ export function setPointing(x: number, y: number) {
     } catch (error) {
       dispatch(SetPointintAcrion.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function setTransform(x: number, y: number, scale: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -156,11 +213,14 @@ export function setTransform(x: number, y: number, scale: number) {
     } catch (error) {
       dispatch(SetTransformAcrion.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function switchCamera() {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -185,11 +245,14 @@ export function switchCamera() {
     } catch (error) {
       dispatch(SwitchCameraAction.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function toggleAudioMuting() {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -209,11 +272,14 @@ export function toggleAudioMuting() {
     } catch (error) {
       dispatch(ToggleAudioMutingAction.failed({ error, params }));
     }
-  }
+  };
 }
 
 export function toggleCameraMuting() {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -233,10 +299,13 @@ export function toggleCameraMuting() {
     } catch (error) {
       dispatch(ToggleCameraMutingAction.failed({ error, params }));
     }
-  }
+  };
 }
 export function toggleMapMuting() {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -251,11 +320,16 @@ export function toggleMapMuting() {
     } catch (error) {
       dispatch(ToggleMapMutingAction.failed({ error, params }));
     }
-  }
+  };
 }
 
-export function InitializeMap(key: string, lat: number, lng: number, defaultZoom: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>, getState: () => TStore) => {
+export function InitializeMap(
+  key: string,
+  lat: number,
+  lng: number,
+  defaultZoom: number
+) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
     const params = {};
 
     try {
@@ -266,13 +340,21 @@ export function InitializeMap(key: string, lat: number, lng: number, defaultZoom
     } catch (error) {
       dispatch(InitializeMapAction.failed({ error, params }));
     }
-  }
+  };
 }
-function onStream(dispatch: ThunkDispatch<TStore, void, AnyAction>, store: TStore, stream: any) {
+
+function onStream(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  store: TStore,
+  stream: any
+) {
   dispatch(AddPeerAction({ peerId: stream.peerId, stream }));
   // Tell who is a presenter now, to peer joined newly.
   if (store.state.presenter) {
-    store.state.room?.send({ type: "peer-selected", peerId: store.state.presenter.peerId });
+    store.state.room?.send({
+      type: "peer-selected",
+      peerId: store.state.presenter.peerId,
+    });
   }
 }
 
@@ -287,7 +369,9 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
       break;
     }
     case "transform-changed": {
-      dispatch(OnTransformChangedAction({ x: data.x, y: data.y, scale: data.scale }));
+      dispatch(
+        OnTransformChangedAction({ x: data.x, y: data.y, scale: data.scale })
+      );
       break;
     }
   }

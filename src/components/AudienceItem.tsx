@@ -4,16 +4,16 @@ import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
 import { TStore } from "../store";
-import { selectPeer } from "../actions"
+import { selectPeer } from "../actions";
 import { Member } from "../types";
 
 import "./AudienceItem.css";
 
 interface IProps {
-  audience: Member,
-  isMuted: boolean,
-  isSelected: boolean,
-  selectPeer: any,
+  audience: Member;
+  isMuted: boolean;
+  isSelected: boolean;
+  selectPeer: any;
 }
 
 class AudienceItem extends React.PureComponent<IProps> {
@@ -26,7 +26,7 @@ class AudienceItem extends React.PureComponent<IProps> {
     this._onClick = this._onClick.bind(this);
   }
 
-  _onClick(e: React.MouseEvent) {
+  _onClick() {
     const { audience, selectPeer } = this.props;
     selectPeer(audience.peerId);
   }
@@ -56,16 +56,24 @@ class AudienceItem extends React.PureComponent<IProps> {
 
     return (
       <li
-        className={"audience-item " + (isSelected ? "audience-item--selected" : "")}
-        onClick={ this._onClick }
+        className={
+          "audience-item " + (isSelected ? "audience-item--selected" : "")
+        }
+        onClick={this._onClick}
       >
-        <video className="audience-item__video" muted={isMuted} ref={this._videoRef}></video>
+        <video
+          className="audience-item__video"
+          muted={isMuted}
+          ref={this._videoRef}
+        />
       </li>
     );
   }
 }
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<TStore, void, AnyAction>
+) => ({
   selectPeer: (peerId: string) => {
     dispatch(selectPeer(peerId));
   },

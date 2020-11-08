@@ -7,18 +7,18 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 import { TStore } from "../store";
 import { Member, Pointing, Transform } from "../types";
-import { setPointing, setTransform } from "../actions"
+import { setPointing, setTransform } from "../actions";
 import PointingComponent from "./Pointing";
 
 import "./Presenter.css";
 
 interface IProps {
-  localPeer?: Peer,
-  pointings: Pointing[],
-  presenter?: Member,
-  transform: Transform,
-  setPointing: any,
-  setTransform: any,
+  localPeer?: Peer;
+  pointings: Pointing[];
+  presenter?: Member;
+  transform: Transform;
+  setPointing: any;
+  setTransform: any;
 }
 
 class Presenter extends React.PureComponent<IProps> {
@@ -51,7 +51,9 @@ class Presenter extends React.PureComponent<IProps> {
   }
 
   _isMobile() {
-    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase());
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+      navigator.userAgent.toLowerCase()
+    );
   }
 
   _onClick(e: any) {
@@ -67,7 +69,7 @@ class Presenter extends React.PureComponent<IProps> {
    * After fixing following issue, need to address for it.
    * https://github.com/prc5/react-zoom-pan-pinch/issues/89
    */
-  _onPanningStop(e: any) {
+  _onPanningStop() {
     this._panStopTimer = window.setTimeout(() => {
       const video = this._videoRef.current;
       if (!video) {
@@ -75,10 +77,14 @@ class Presenter extends React.PureComponent<IProps> {
       }
 
       const transformElement = video.closest(".react-transform-element");
-      const transform = transformElement.style.transform.match(/translate\((.*)\) scale\((.*)\)/);
+      const transform = transformElement.style.transform.match(
+        /translate\((.*)\) scale\((.*)\)/
+      );
       const translate = transform[1];
       const translateMatch = translate.match(/(.*), (.*)/);
-      const positionX = parseFloat(translateMatch ? translateMatch[1] : translate);
+      const positionX = parseFloat(
+        translateMatch ? translateMatch[1] : translate
+      );
       const positionY = parseFloat(
         translateMatch && translateMatch.length === 3 ? translateMatch[2] : 0
       );
@@ -111,7 +117,15 @@ class Presenter extends React.PureComponent<IProps> {
       const y = area.offsetTop + area.clientHeight * p.y;
       const radian = Math.atan2(p.x - 0.5, -(p.y - 0.5));
 
-      return <PointingComponent key={audience.peerId} audience={audience} x={x} y={y} radian={radian}/>;
+      return (
+        <PointingComponent
+          key={audience.peerId}
+          audience={audience}
+          x={x}
+          y={y}
+          radian={radian}
+        />
+      );
     });
   }
 
@@ -149,22 +163,23 @@ class Presenter extends React.PureComponent<IProps> {
   render() {
     const area = this._getVideoArea();
 
-    const settings = this._amIPresenter() && this._isMobile()
-      ? {
-        onPanningStop: this._onPanningStop,
-        onZoomChange: this._onZoomChange,
-        pan: {
-          disabled: false,
-        },
-      }
-      : {
-        positionX: area?.clientWidth * this.props.transform.x,
-        positionY: area?.clientHeight * this.props.transform.y,
-        scale: this.props.transform.scale,
-        pan: {
-          disabled: true,
-        },
-      };
+    const settings =
+      this._amIPresenter() && this._isMobile()
+        ? {
+            onPanningStop: this._onPanningStop,
+            onZoomChange: this._onZoomChange,
+            pan: {
+              disabled: false,
+            },
+          }
+        : {
+            positionX: area?.clientWidth * this.props.transform.x,
+            positionY: area?.clientHeight * this.props.transform.y,
+            scale: this.props.transform.scale,
+            pan: {
+              disabled: true,
+            },
+          };
 
     return (
       <section className="presenter">
@@ -182,7 +197,7 @@ class Presenter extends React.PureComponent<IProps> {
             <video className="presenter__video" ref={this._videoRef}></video>
           </TransformComponent>
         </TransformWrapper>
-        { this._renderPointings() }
+        {this._renderPointings()}
       </section>
     );
   }
@@ -194,10 +209,12 @@ const mapStateToProps = (store: TStore) => {
     pointings: store.state.pointings,
     presenter: store.state.presenter,
     transform: store.state.transform,
-  }
-}
+  };
+};
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<TStore, void, AnyAction>
+) => ({
   setPointing: (x: number, y: number) => {
     dispatch(setPointing(x, y));
   },
