@@ -1,14 +1,14 @@
-import { combineReducers, createStore, applyMiddleware} from "redux";
+import { combineReducers, createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { reducer, IState } from "./reducer";
 
 export type TStore = {
-  state: IState
-}
+  state: IState;
+};
 
 export const store = createStore(
   combineReducers<TStore>({
-    state: reducer
+    state: reducer,
   }),
   {},
   applyMiddleware(thunk)

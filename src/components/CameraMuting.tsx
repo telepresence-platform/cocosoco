@@ -4,15 +4,15 @@ import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
 import { TStore } from "../store";
-import { toggleCameraMuting } from "../actions"
+import { toggleCameraMuting } from "../actions";
 
 import logoEnabled from "./CameraMuting.svg";
 import logoDisabled from "./CameraMutingDisabled.svg";
 import "./CameraMuting.css";
 
 interface IProps {
-  isCameraEnabled: boolean,
-  toggleCameraMuting: any,
+  isCameraEnabled: boolean;
+  toggleCameraMuting: any;
 }
 
 class CameraMuting extends React.PureComponent<IProps> {
@@ -22,7 +22,11 @@ class CameraMuting extends React.PureComponent<IProps> {
 
     return (
       <button onClick={this.props.toggleCameraMuting} className="camera-muting">
-        <img src={logo} alt="mute/unmute camera" className="camera-muting__image" />
+        <img
+          src={logo}
+          alt="mute/unmute camera"
+          className="camera-muting__image"
+        />
       </button>
     );
   }
@@ -31,10 +35,12 @@ class CameraMuting extends React.PureComponent<IProps> {
 const mapStateToProps = (store: TStore) => {
   return {
     isCameraEnabled: store.state.isCameraEnabled,
-  }
-}
+  };
+};
 
-const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
+const mapDispatchToProps = (
+  dispatch: ThunkDispatch<TStore, void, AnyAction>
+) => ({
   toggleCameraMuting: () => {
     dispatch(toggleCameraMuting());
   },
