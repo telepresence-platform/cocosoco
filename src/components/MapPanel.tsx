@@ -7,33 +7,35 @@ import { AnyAction } from "redux";
 import { TStore } from "../store";
 import { toggleMapMuting } from "../actions"
 import { InitializeMap } from "../actions"
+import { Map } from "../types"
 
 import "./MapPanel.css";
 
 interface IProps {
-  mapkey: string,
-  lat: number,
-  lng: number,
-  defaultZoom: number,
+  map?: Map,
   isMapEnabled: boolean,
 }
 
 class MapPanel extends React.PureComponent<IProps> {
   render() {
-    const { isMapEnabled, mapkey, lat, lng, defaultZoom } = this.props;
+    const { isMapEnabled, map } = this.props;
     const className = isMapEnabled ? "mappanel" : "mappanel--disabled";
+
+    if (!map) {
+      return null;
+    }
 
     return (
       <div className={className}>
         <GoogleMapReact
           bootstrapURLKeys={{
-            key: mapkey
+            key: map.key
           }}
           defaultCenter={{
-            lat: lat,
-            lng: lng
+            lat: map.lat,
+            lng: map.lng
           }}
-          defaultZoom={defaultZoom}>
+          defaultZoom={map.defaultZoom}>
         </GoogleMapReact>
       </div>
     );
@@ -43,16 +45,13 @@ class MapPanel extends React.PureComponent<IProps> {
 const mapStateToProps = (store: TStore) => {
   return {
     isMapEnabled: store.state.isMapEnabled,
-    mapkey: store.state.mapkey,
-    lat: store.state.lat,
-    lng: store.state.lng,
-    defaultZoom: store.state.defaultZoom,
+    map: store.state.map,
   }
 }
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<TStore, void, AnyAction>) => ({
-  InitializeMap: (mapkey: string, lat: number, lng: number, defaultZoom: number) => {
-    dispatch(InitializeMap(mapkey,lat, lng, defaultZoom));
+  InitializeMap: (key: string, lat: number, lng: number, defaultZoom: number) => {
+    dispatch(InitializeMap(key, lat, lng, defaultZoom));
   },
   toggleMapMuting: () => {
     dispatch(toggleMapMuting());
