@@ -9,13 +9,16 @@ import { toggleMapMuting } from "../actions";
 import { InitializeMap } from "../actions";
 import { Map } from "../types";
 
+import pinImage from "./pin_leg.png";
 import "./MapPanel.css";
 
 interface IProps {
   map?: Map;
   isMapEnabled: boolean;
 }
-
+const AnyReactComponent = ({ pinImage }: any) => {
+  return <img src={pinImage} alt="current position" />;
+};
 class MapPanel extends React.PureComponent<IProps> {
   render() {
     const { isMapEnabled, map } = this.props;
@@ -36,7 +39,9 @@ class MapPanel extends React.PureComponent<IProps> {
             lng: map.lng,
           }}
           defaultZoom={map.defaultZoom}
-        />
+        >
+          <AnyReactComponent lat={map.lat} lng={map.lng} pinImage={pinImage} />
+        </GoogleMapReact>
       </div>
     );
   }
@@ -52,13 +57,8 @@ const mapStateToProps = (store: TStore) => {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
-  InitializeMap: (
-    key: string,
-    lat: number,
-    lng: number,
-    defaultZoom: number
-  ) => {
-    dispatch(InitializeMap(key, lat, lng, defaultZoom));
+  InitializeMap: (key: string) => {
+    dispatch(InitializeMap(key));
   },
   toggleMapMuting: () => {
     dispatch(toggleMapMuting());

@@ -10,6 +10,7 @@ import {
   ToggleAudioMutingAction,
   ToggleCameraMutingAction,
   ToggleMapMutingAction,
+  OnMapLocationChangedAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
   InitializeMapAction,
@@ -121,6 +122,11 @@ export const reducer = reducerWithInitialState(initialState)
     const { isEnabled } = result;
 
     return Object.assign({}, state, { isMapEnabled: isEnabled });
+  })
+  .case(OnMapLocationChangedAction, (state, { lat, lng }) => {
+    return Object.assign({}, state, {
+      map: Object.assign({}, state.map, { lat, lng }),
+    });
   })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);

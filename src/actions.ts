@@ -72,6 +72,10 @@ export const InitializeMapAction = actionCreator.async<
   },
   { error: any }
 >("INITIALIZE_MAP");
+export const OnMapLocationChangedAction = actionCreator<{
+  lat: number;
+  lng: number;
+}>("ON_MAP_LOCATION_CHANGED");
 export const OnPeerSelectedAction = actionCreator<{
   peerId: string;
 }>("ON_PEER_SELECTED");
@@ -323,18 +327,26 @@ export function toggleMapMuting() {
   };
 }
 
-export function InitializeMap(
-  key: string,
-  lat: number,
-  lng: number,
-  defaultZoom: number
-) {
+export function InitializeMap(key: string) {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
     const params = {};
 
     try {
       dispatch(InitializeMapAction.started(params));
-
+      const defaultZoom = 12;
+      const { lat, lng } = await new Promise(resolve =>
+        navigator.geolocation.getCurrentPosition(pos => {
+          resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        })
+      );
+      navigator.geolocation.watchPosition(pos => {
+        dispatch(
+          OnMapLocationChangedAction({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          })
+        );
+      });
       const result = { key, lat, lng, defaultZoom };
       dispatch(InitializeMapAction.done({ result, params }));
     } catch (error) {

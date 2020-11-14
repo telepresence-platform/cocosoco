@@ -17,9 +17,6 @@ interface IProps {
 interface IState {
   key: string | null;
   mapkey: string | null;
-  lat: number;
-  lng: number;
-  defaultZoom: number;
   network: string | null;
   room: string | null;
   error: string | null;
@@ -34,9 +31,6 @@ class Participation extends React.PureComponent<IProps, IState> {
     const url = new URL(document.URL);
     const key = url.searchParams.get("key");
     const mapkey = url.searchParams.get("mapkey");
-    const lat = 35.7139014;
-    const lng = 139.7601034;
-    const defaultZoom = 12;
     const network = url.searchParams.get("network");
     const room = url.searchParams.get("room");
 
@@ -49,15 +43,17 @@ class Participation extends React.PureComponent<IProps, IState> {
       error = "No specific GoogleMapAPIkey";
     }
 
-    this.state = { key, mapkey, lat, lng, defaultZoom, network, room, error };
+    this.state = { key, mapkey, network, room, error };
   }
 
   _onClick() {
     const { participate, InitializeMap } = this.props;
-    const { key, mapkey, lat, lng, defaultZoom, network, room } = this.state;
+    const { key, mapkey, network, room } = this.state;
     this.setState({ isParticipating: true });
     participate(key, network, room);
-    InitializeMap(mapkey, lat, lng, defaultZoom);
+    InitializeMap(
+      mapkey,
+    );
   }
 
   render() {
@@ -90,11 +86,8 @@ const mapDispatchToProps = (
   },
   InitializeMap: (
     mapkey: string,
-    lat: number,
-    lng: number,
-    defaultZoom: number
   ) => {
-    dispatch(InitializeMap(mapkey, lat, lng, defaultZoom));
+    dispatch(InitializeMap(mapkey));
   },
 });
 
