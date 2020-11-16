@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "813998c1c8e9017434beab811222fdde",
+    "revision": "373d0605372e1bfb3d4b16a9ad4cedc8",
     "url": "/cocosoco/index.html"
   },
   {
-    "revision": "5871ced5166377df4247",
-    "url": "/cocosoco/static/css/main.0f805b99.chunk.css"
+    "revision": "e6e63c9d17774adaa3ef",
+    "url": "/cocosoco/static/css/main.11e2b05f.chunk.css"
   },
   {
-    "revision": "0905c56ad405547b5530",
-    "url": "/cocosoco/static/js/2.8aa07e0c.chunk.js"
+    "revision": "00aba1314ee5ae5edeaf",
+    "url": "/cocosoco/static/js/2.4f6f97bd.chunk.js"
   },
   {
-    "revision": "d628b86b05225b4ee57b19ea2088d87a",
-    "url": "/cocosoco/static/js/2.8aa07e0c.chunk.js.LICENSE.txt"
+    "revision": "257c00b15ab09048e720bb9c313f172d",
+    "url": "/cocosoco/static/js/2.4f6f97bd.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "5871ced5166377df4247",
-    "url": "/cocosoco/static/js/main.b1a80432.chunk.js"
+    "revision": "e6e63c9d17774adaa3ef",
+    "url": "/cocosoco/static/js/main.be1aeed6.chunk.js"
   },
   {
-    "revision": "f97a5b8249d84b244e04",
-    "url": "/cocosoco/static/js/runtime-main.c896fc62.js"
+    "revision": "bfb66731308837b068ce",
+    "url": "/cocosoco/static/js/runtime-main.7cac4035.js"
   },
   {
     "revision": "728874bb0fb539dd68b40b81e84fd691",
@@ -42,6 +42,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "e1a723d2b40adf5b53555a15c2143693",
     "url": "/cocosoco/static/media/CameraSwitching.e1a723d2.svg"
+  },
+  {
+    "revision": "347851c38bb4bd917e0d743567beab7c",
+    "url": "/cocosoco/static/media/MapMuting.347851c3.svg"
+  },
+  {
+    "revision": "7281d98588ce7c7d66ad45c6d97c5bb1",
+    "url": "/cocosoco/static/media/MapMutingDisabled.7281d985.svg"
   },
   {
     "revision": "c29bd356145ece13cc8b9acc313f4484",
