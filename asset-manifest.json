@@ -1,30 +1,28 @@
 {
   "files": {
-    "main.css": "/cocosoco/static/css/main.11e2b05f.chunk.css",
-    "main.js": "/cocosoco/static/js/main.be1aeed6.chunk.js",
-    "main.js.map": "/cocosoco/static/js/main.be1aeed6.chunk.js.map",
-    "runtime-main.js": "/cocosoco/static/js/runtime-main.7cac4035.js",
-    "runtime-main.js.map": "/cocosoco/static/js/runtime-main.7cac4035.js.map",
-    "static/js/2.4f6f97bd.chunk.js": "/cocosoco/static/js/2.4f6f97bd.chunk.js",
-    "static/js/2.4f6f97bd.chunk.js.map": "/cocosoco/static/js/2.4f6f97bd.chunk.js.map",
+    "main.css": "/cocosoco/static/css/main.b25c62fb.chunk.css",
+    "main.js": "/cocosoco/static/js/main.c3ee1147.chunk.js",
+    "main.js.map": "/cocosoco/static/js/main.c3ee1147.chunk.js.map",
+    "runtime-main.js": "/cocosoco/static/js/runtime-main.2ef79a80.js",
+    "runtime-main.js.map": "/cocosoco/static/js/runtime-main.2ef79a80.js.map",
+    "static/js/2.3e9e4382.chunk.js": "/cocosoco/static/js/2.3e9e4382.chunk.js",
+    "static/js/2.3e9e4382.chunk.js.map": "/cocosoco/static/js/2.3e9e4382.chunk.js.map",
     "index.html": "/cocosoco/index.html",
-    "precache-manifest.f8570ad943b51ae1a395179282eb0855.js": "/cocosoco/precache-manifest.f8570ad943b51ae1a395179282eb0855.js",
-    "service-worker.js": "/cocosoco/service-worker.js",
-    "static/css/main.11e2b05f.chunk.css.map": "/cocosoco/static/css/main.11e2b05f.chunk.css.map",
-    "static/js/2.4f6f97bd.chunk.js.LICENSE.txt": "/cocosoco/static/js/2.4f6f97bd.chunk.js.LICENSE.txt",
-    "static/media/AudioMuting.svg": "/cocosoco/static/media/AudioMuting.728874bb.svg",
-    "static/media/AudioMutingDisabled.svg": "/cocosoco/static/media/AudioMutingDisabled.288ed0b3.svg",
-    "static/media/CameraMuting.svg": "/cocosoco/static/media/CameraMuting.6dfcbc6b.svg",
-    "static/media/CameraMutingDisabled.svg": "/cocosoco/static/media/CameraMutingDisabled.cd67b22a.svg",
-    "static/media/CameraSwitching.svg": "/cocosoco/static/media/CameraSwitching.e1a723d2.svg",
-    "static/media/MapMuting.svg": "/cocosoco/static/media/MapMuting.347851c3.svg",
-    "static/media/MapMutingDisabled.svg": "/cocosoco/static/media/MapMutingDisabled.7281d985.svg",
-    "static/media/Pointing.png": "/cocosoco/static/media/Pointing.c29bd356.png"
+    "static/css/main.b25c62fb.chunk.css.map": "/cocosoco/static/css/main.b25c62fb.chunk.css.map",
+    "static/js/2.3e9e4382.chunk.js.LICENSE.txt": "/cocosoco/static/js/2.3e9e4382.chunk.js.LICENSE.txt",
+    "static/media/AudioMuting.1652404d.svg": "/cocosoco/static/media/AudioMuting.1652404d.svg",
+    "static/media/AudioMutingDisabled.df4814d2.svg": "/cocosoco/static/media/AudioMutingDisabled.df4814d2.svg",
+    "static/media/CameraMuting.e9966563.svg": "/cocosoco/static/media/CameraMuting.e9966563.svg",
+    "static/media/CameraMutingDisabled.122df4d4.svg": "/cocosoco/static/media/CameraMutingDisabled.122df4d4.svg",
+    "static/media/CameraSwitching.626c7733.svg": "/cocosoco/static/media/CameraSwitching.626c7733.svg",
+    "static/media/MapMuting.68798305.svg": "/cocosoco/static/media/MapMuting.68798305.svg",
+    "static/media/MapMutingDisabled.2c8147b6.svg": "/cocosoco/static/media/MapMutingDisabled.2c8147b6.svg",
+    "static/media/Pointing.404d2612.png": "/cocosoco/static/media/Pointing.404d2612.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.7cac4035.js",
-    "static/js/2.4f6f97bd.chunk.js",
-    "static/css/main.11e2b05f.chunk.css",
-    "static/js/main.be1aeed6.chunk.js"
+    "static/js/runtime-main.2ef79a80.js",
+    "static/js/2.3e9e4382.chunk.js",
+    "static/css/main.b25c62fb.chunk.css",
+    "static/js/main.c3ee1147.chunk.js"
   ]
 }
