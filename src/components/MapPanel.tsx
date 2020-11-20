@@ -34,7 +34,7 @@ class MapPanel extends React.PureComponent<IProps> {
           bootstrapURLKeys={{
             key: map.key,
           }}
-          defaultCenter={{
+          center={{
             lat: map.lat,
             lng: map.lng,
           }}
