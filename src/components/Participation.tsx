@@ -51,9 +51,7 @@ class Participation extends React.PureComponent<IProps, IState> {
     const { key, mapkey, network, room } = this.state;
     this.setState({ isParticipating: true });
     participate(key, network, room);
-    InitializeMap(
-      mapkey,
-    );
+    InitializeMap(mapkey);
   }
 
   render() {
@@ -84,9 +82,7 @@ const mapDispatchToProps = (
   participate: (key: string, network: "mesh" | "sfu", room: string) => {
     dispatch(participate(key, network, room));
   },
-  InitializeMap: (
-    mapkey: string,
-  ) => {
+  InitializeMap: (mapkey: string) => {
     dispatch(InitializeMap(mapkey));
   },
 });

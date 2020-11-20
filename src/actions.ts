@@ -328,7 +328,10 @@ export function toggleMapMuting() {
 }
 
 export function InitializeMap(key: string) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = {};
 
     try {
@@ -340,12 +343,27 @@ export function InitializeMap(key: string) {
         })
       );
       navigator.geolocation.watchPosition(pos => {
-        dispatch(
-          OnMapLocationChangedAction({
+        const state = getState()?.state;
+
+        if (!state) {
+          return;
+        }
+
+        const presenter = state.presenter?.peerId;
+        const localpeer = state.localPeer?.id;
+        if (presenter === localpeer) {
+          state.room?.send({
+            type: "location-changed",
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
-          })
-        );
+          });
+          dispatch(
+            OnMapLocationChangedAction({
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            })
+          );
+        }
       });
       const result = { key, lat, lng, defaultZoom };
       dispatch(InitializeMapAction.done({ result, params }));
@@ -372,6 +390,10 @@ function onStream(
 
 function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
   switch (data.type) {
+    case "location-changed": {
+      dispatch(OnMapLocationChangedAction({ lat: data.lat, lng: data.lng }));
+      break;
+    }
     case "peer-selected": {
       dispatch(OnPeerSelectedAction({ peerId: data.peerId }));
       break;
