@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/cocosoco/static/css/main.b25c62fb.chunk.css",
-    "main.js": "/cocosoco/static/js/main.c3ee1147.chunk.js",
-    "main.js.map": "/cocosoco/static/js/main.c3ee1147.chunk.js.map",
+    "main.css": "/cocosoco/static/css/main.94c5b2f0.chunk.css",
+    "main.js": "/cocosoco/static/js/main.27200609.chunk.js",
+    "main.js.map": "/cocosoco/static/js/main.27200609.chunk.js.map",
     "runtime-main.js": "/cocosoco/static/js/runtime-main.2ef79a80.js",
     "runtime-main.js.map": "/cocosoco/static/js/runtime-main.2ef79a80.js.map",
     "static/js/2.3e9e4382.chunk.js": "/cocosoco/static/js/2.3e9e4382.chunk.js",
     "static/js/2.3e9e4382.chunk.js.map": "/cocosoco/static/js/2.3e9e4382.chunk.js.map",
     "index.html": "/cocosoco/index.html",
-    "static/css/main.b25c62fb.chunk.css.map": "/cocosoco/static/css/main.b25c62fb.chunk.css.map",
+    "static/css/main.94c5b2f0.chunk.css.map": "/cocosoco/static/css/main.94c5b2f0.chunk.css.map",
     "static/js/2.3e9e4382.chunk.js.LICENSE.txt": "/cocosoco/static/js/2.3e9e4382.chunk.js.LICENSE.txt",
     "static/media/AudioMuting.1652404d.svg": "/cocosoco/static/media/AudioMuting.1652404d.svg",
     "static/media/AudioMutingDisabled.df4814d2.svg": "/cocosoco/static/media/AudioMutingDisabled.df4814d2.svg",
@@ -22,7 +22,7 @@
   "entrypoints": [
     "static/js/runtime-main.2ef79a80.js",
     "static/js/2.3e9e4382.chunk.js",
-    "static/css/main.b25c62fb.chunk.css",
-    "static/js/main.c3ee1147.chunk.js"
+    "static/css/main.94c5b2f0.chunk.css",
+    "static/js/main.27200609.chunk.js"
   ]
 }
