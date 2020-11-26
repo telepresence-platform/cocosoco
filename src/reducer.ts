@@ -68,6 +68,10 @@ export const reducer = reducerWithInitialState(initialState)
   .case(ParticipateAction.done, (state, { result }) => {
     const { localPeer, localStream, room } = result;
 
+    for (const track of localStream.getVideoTracks() || []) {
+      track.enabled = false;
+    }
+
     const audience = {
       peerId: localPeer.id,
       stream: localStream,
@@ -130,6 +134,12 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
+    const localStream = state.localStream;
+    const localPeer = state.localPeer;
+    const isEnabled = localPeer?.id === peerId;
+    for (const track of localStream?.getVideoTracks() || []) {
+      track.enabled = isEnabled;
+    }
 
     return Object.assign({}, state, {
       presenter,

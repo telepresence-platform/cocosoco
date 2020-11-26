@@ -12,29 +12,6 @@ interface IProps {
 }
 
 class Pointing extends React.PureComponent<IProps> {
-  // As video.playsInline is not defined in HTMLVideoElement, add "any" as well.
-  private _videoRef = React.createRef<HTMLVideoElement | any>();
-
-  _updateVideo() {
-    const video = this._videoRef.current;
-    if (!video) {
-      return;
-    }
-
-    const { audience } = this.props;
-    video.srcObject = audience.stream;
-    video.playsInline = true;
-    video.play();
-  }
-
-  componentDidMount() {
-    this._updateVideo();
-  }
-
-  componentDidUpdate() {
-    this._updateVideo();
-  }
-
   render() {
     const { audience, x, y, radian } = this.props;
 
@@ -47,22 +24,10 @@ class Pointing extends React.PureComponent<IProps> {
       transformOrigin: "60% 0%",
     };
 
-    const videoStyles = {
-      transform: `scale(${angle > 0 ? -1 : 1}, 1) rotate(${-angle}deg)`,
-      transformOrigin: "50%",
-    };
-
     return (
       <mark className="pointing" style={styles}>
         <img className="pointing__image" src={logo} alt={audience.peerId} />
-        <div className="pointing__audience">
-          <video
-            className="pointing__audience__video"
-            style={videoStyles}
-            muted={true}
-            ref={this._videoRef}
-          ></video>
-        </div>
+        <div className="pointing__audience"></div>
       </mark>
     );
   }
