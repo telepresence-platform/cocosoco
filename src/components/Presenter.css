@@ -7,14 +7,16 @@
 }
 
 .react-transform-component {
-  height: 100%;
+  /* avoid react-zoom-pan-pinch style */
+  height: 100% !important;
   /* in order to keep the width of video */
   overflow: unset !important;
   clip-path: content-box;
 }
 
 .react-transform-element {
-  height: 100%;
+  /* avoid react-zoom-pan-pinch style */
+  height: 100% !important;
   pointer-events: none;
 }
 
