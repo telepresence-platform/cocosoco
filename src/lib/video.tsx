@@ -1,6 +1,12 @@
 let currentIndex = -1;
 let currentStream: any = null;
 async function getDevices() {
+  // It seems that there are cases the deviceId might be empty unless we call getUserMedia() once.
+  await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+  });
+
   const devices = await navigator.mediaDevices.enumerateDevices();
   return devices.filter(device => device.kind === "videoinput");
 }
