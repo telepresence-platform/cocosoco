@@ -16,6 +16,11 @@
 }
 
 .audience-item__video {
+  width: 0;
+  height: 0;
+}
+
+.audience-item__icon {
   pointer-events: none;
   clip-path: circle(36%);
   width: 13vw;

@@ -52,8 +52,7 @@ class AudienceItem extends React.PureComponent<IProps> {
   }
 
   render() {
-    const { isMuted, isSelected } = this.props;
-
+    const { isSelected, isMuted, audience } = this.props;
     return (
       <li
         className={
@@ -61,6 +60,7 @@ class AudienceItem extends React.PureComponent<IProps> {
         }
         onClick={this._onClick}
       >
+        <img src={audience.dataURL} className="audience-item__icon"></img>
         <video
           className="audience-item__video"
           muted={isMuted}

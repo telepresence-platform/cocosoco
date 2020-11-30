@@ -7,7 +7,8 @@ export interface Map {
 
 export interface Member {
   peerId: string;
-  stream: any;
+  stream?: any;
+  dataURL?: string;
 }
 
 export interface Pointing {

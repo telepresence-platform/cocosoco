@@ -24,6 +24,7 @@ export const ParticipateAction = actionCreator.async<
     localPeer: Peer;
     localStream: MediaStream;
     room: any;
+    dataURL: string;
   },
   { error: any }
 >("PARTICIPATE");
@@ -76,6 +77,10 @@ export const OnMapLocationChangedAction = actionCreator<{
   lat: number;
   lng: number;
 }>("ON_MAP_LOCATION_CHANGED");
+export const OnIconUpdatedAction = actionCreator<{
+  dataURL: string;
+  peerId: string;
+}>("ON_ICON_UPDATED");
 export const OnPeerSelectedAction = actionCreator<{
   peerId: string;
 }>("ON_PEER_SELECTED");
@@ -90,17 +95,17 @@ const pointingTimerMap = new Map();
 export function participate(
   key: string,
   network: "mesh" | "sfu",
-  roomId: string
+  roomId: string,
+  dataURL: string,
+  localStream: MediaStream
 ) {
   return async (
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
     getState: () => TStore
   ) => {
-    const params = { key, network, roomId };
+    const params = { key, network, roomId, dataURL, localStream };
     try {
       dispatch(ParticipateAction.started(params));
-
-      const localStream = await nextVideoStream();
       const localPeer: Peer = await new Promise(r => {
         const peer = new Peer({ key: key });
         peer.on("open", () => r(peer));
@@ -119,6 +124,7 @@ export function participate(
         localPeer,
         localStream,
         room,
+        dataURL,
       };
 
       dispatch(ParticipateAction.done({ result, params }));
@@ -379,6 +385,16 @@ function onStream(
   stream: any
 ) {
   dispatch(AddPeerAction({ peerId: stream.peerId, stream }));
+  const audience = store.state.audiences.find(
+    a => a.peerId === store.state.localPeer?.id
+  );
+  if (audience) {
+    store.state.room?.send({
+      type: "icon-updated",
+      dataURL: audience.dataURL,
+      peerId: store.state.localPeer?.id,
+    });
+  }
   // Tell who is a presenter now, to peer joined newly.
   if (store.state.presenter) {
     store.state.room?.send({
@@ -392,6 +408,15 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
   switch (data.type) {
     case "location-changed": {
       dispatch(OnMapLocationChangedAction({ lat: data.lat, lng: data.lng }));
+      break;
+    }
+    case "icon-updated": {
+      dispatch(
+        OnIconUpdatedAction({
+          dataURL: data.dataURL,
+          peerId: data.peerId,
+        })
+      );
       break;
     }
     case "peer-selected": {
