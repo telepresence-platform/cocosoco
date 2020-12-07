@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { AnyAction } from "redux";
 
+import { nextVideoStream } from "../lib/video";
 import { TStore } from "../store";
 import { participate } from "../actions";
 import { InitializeMap } from "../actions";
@@ -21,9 +22,13 @@ interface IState {
   room: string | null;
   error: string | null;
   isParticipating?: boolean;
+  localStream?: MediaStream;
 }
 
 class Participation extends React.PureComponent<IProps, IState> {
+  private _videoRef = React.createRef<HTMLVideoElement | any>();
+  private _canvasRef = React.createRef<HTMLCanvasElement | any>();
+
   constructor(props: IProps) {
     super(props);
     this._onClick = this._onClick.bind(this);
@@ -46,12 +51,42 @@ class Participation extends React.PureComponent<IProps, IState> {
     this.state = { key, mapkey, network, room, error };
   }
 
+  _updateVideo() {
+    const video = this._videoRef.current;
+    if (!video) {
+      return;
+    }
+
+    video.srcObject = this.state.localStream;
+    video.playsInline = true;
+    video.play();
+  }
+
   _onClick() {
     const { participate, InitializeMap } = this.props;
-    const { key, mapkey, network, room } = this.state;
+    const { key, mapkey, network, room, localStream } = this.state;
+
+    const video = this._videoRef.current;
+    const canvas = this._canvasRef.current;
+
+    const context = canvas.getContext("2d");
+    canvas.width = 110;
+    canvas.height = 110;
+    context?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL();
+
     this.setState({ isParticipating: true });
-    participate(key, network, room);
+    participate(key, network, room, dataURL, localStream);
     InitializeMap(mapkey);
+  }
+
+  async componentDidMount(): Promise<void> {
+    const localStream = await nextVideoStream();
+    this.setState({ localStream });
+  }
+
+  componentDidUpdate() {
+    this._updateVideo();
   }
 
   render() {
@@ -59,6 +94,14 @@ class Participation extends React.PureComponent<IProps, IState> {
 
     return (
       <section className="participation">
+        <div className="participation__capture">
+          <video
+            className="participation__video"
+            muted={true}
+            ref={this._videoRef}
+          />
+          <canvas ref={this._canvasRef}></canvas>
+        </div>
         {error ? (
           <label className="participation__error">{error}</label>
         ) : (
@@ -79,8 +122,14 @@ class Participation extends React.PureComponent<IProps, IState> {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
-  participate: (key: string, network: "mesh" | "sfu", room: string) => {
-    dispatch(participate(key, network, room));
+  participate: (
+    key: string,
+    network: "mesh" | "sfu",
+    room: string,
+    dataURL: string,
+    localStream: MediaStream
+  ) => {
+    dispatch(participate(key, network, room, dataURL, localStream));
   },
   InitializeMap: (mapkey: string) => {
     dispatch(InitializeMap(mapkey));

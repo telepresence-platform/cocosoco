@@ -11,6 +11,7 @@ import {
   ToggleCameraMutingAction,
   ToggleMapMutingAction,
   OnMapLocationChangedAction,
+  OnIconUpdatedAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
   InitializeMapAction,
@@ -45,8 +46,16 @@ const initialState: IState = {
 
 export const reducer = reducerWithInitialState(initialState)
   .case(AddPeerAction, (state, { peerId, stream }) => {
-    const audience = { peerId, stream };
-    const audiences = [...state.audiences, audience];
+    const index = state.audiences.findIndex(a => a.peerId === peerId);
+    let audience;
+    let audiences = state.audiences;
+    if (index !== -1) {
+      audience = audiences[index];
+      audiences[index] = Object.assign({}, audience, { stream: stream });
+      audiences = [...state.audiences];
+    } else {
+      audiences = [...state.audiences, { peerId, stream }];
+    }
 
     // As the presenter peer joined after firing `peer-selected` event, set as a presenter.
     const presenter =
@@ -66,7 +75,7 @@ export const reducer = reducerWithInitialState(initialState)
     });
   })
   .case(ParticipateAction.done, (state, { result }) => {
-    const { localPeer, localStream, room } = result;
+    const { localPeer, localStream, room, dataURL } = result;
 
     for (const track of localStream.getVideoTracks() || []) {
       track.enabled = false;
@@ -75,6 +84,7 @@ export const reducer = reducerWithInitialState(initialState)
     const audience = {
       peerId: localPeer.id,
       stream: localStream,
+      dataURL: dataURL,
     };
     const audiences = [audience];
 
@@ -131,6 +141,20 @@ export const reducer = reducerWithInitialState(initialState)
     return Object.assign({}, state, {
       map: Object.assign({}, state.map, { lat, lng }),
     });
+  })
+  .case(OnIconUpdatedAction, (state, { dataURL, peerId }) => {
+    const index = state.audiences.findIndex(a => a.peerId === peerId);
+    let audience;
+    let audiences = state.audiences;
+    if (index !== -1) {
+      audience = audiences[index];
+      audiences[index] = Object.assign({}, audience, { dataURL: dataURL });
+      audiences = [...state.audiences];
+    } else {
+      audiences = [...state.audiences, { peerId, dataURL }];
+    }
+
+    return Object.assign({}, state, { audiences });
   })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
