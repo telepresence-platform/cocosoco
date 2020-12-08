@@ -114,11 +114,14 @@ export const reducer = reducerWithInitialState(initialState)
     const audiences = state.audiences.map(a =>
       a.peerId === peerId ? { peerId, stream: localStream } : a
     );
+    const presenter = audiences.find(a => a.peerId === peerId);
 
-    const presenter =
-      state.presenter?.peerId === peerId
-        ? { peerId, stream: localStream }
-        : state.presenter;
+    updateVideoStreamEnabled(
+      localStream,
+      state.localPeer,
+      state.isCameraEnabled,
+      presenter
+    );
 
     return Object.assign({}, state, { audiences, localStream, presenter });
   })
@@ -129,6 +132,13 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(ToggleCameraMutingAction.done, (state, { result }) => {
     const { isEnabled } = result;
+
+    updateVideoStreamEnabled(
+      state.localStream,
+      state.localPeer,
+      isEnabled,
+      state.presenter
+    );
 
     return Object.assign({}, state, { isCameraEnabled: isEnabled });
   })
@@ -158,12 +168,13 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
-    const localStream = state.localStream;
-    const localPeer = state.localPeer;
-    const isEnabled = localPeer?.id === peerId;
-    for (const track of localStream?.getVideoTracks() || []) {
-      track.enabled = isEnabled;
-    }
+
+    updateVideoStreamEnabled(
+      state.localStream,
+      state.localPeer,
+      state.isCameraEnabled,
+      presenter
+    );
 
     return Object.assign({}, state, {
       presenter,
@@ -178,3 +189,21 @@ export const reducer = reducerWithInitialState(initialState)
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
   });
+
+function updateVideoStreamEnabled(
+  localStream?: MediaStream,
+  localPeer?: Peer,
+  isCameraEnabled?: boolean,
+  presenter?: Member
+) {
+  if (!localStream) {
+    return;
+  }
+
+  const isEnabled: boolean = !!(
+    isCameraEnabled && localPeer?.id === presenter?.peerId
+  );
+  for (const track of localStream.getVideoTracks() || []) {
+    track.enabled = isEnabled;
+  }
+}

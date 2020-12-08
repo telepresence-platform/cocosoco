@@ -297,11 +297,6 @@ export function toggleCameraMuting() {
 
       const state = getState()?.state;
       const isEnabled = !state?.isCameraEnabled;
-      const localStream = state?.localStream;
-
-      for (const track of localStream?.getVideoTracks() || []) {
-        track.enabled = isEnabled;
-      }
 
       const result = { isEnabled };
 
