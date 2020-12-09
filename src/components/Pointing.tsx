@@ -23,11 +23,21 @@ class Pointing extends React.PureComponent<IProps> {
       transform: `translate(-60%, 0%) rotate(${angle}deg) scale(${scale}, 1)`,
       transformOrigin: "60% 0%",
     };
+    const iconStyles = {
+      transform: `scale(${angle > 0 ? -1 : 1}, 1) rotate(${-angle}deg)`,
+      transformOrigin: "50%",
+    };
 
     return (
       <mark className="pointing" style={styles}>
         <img className="pointing__image" src={logo} alt={audience.peerId} />
-        <div className="pointing__audience"></div>
+        <div className="pointing__audience">
+          <img
+            className="pointing__audience__icon"
+            style={iconStyles}
+            src={audience.dataURL}
+          />
+        </div>
       </mark>
     );
   }
