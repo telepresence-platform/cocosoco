@@ -26,7 +26,7 @@
   align-items: center;
 }
 
-.pointing__audience__video {
+.pointing__audience__icon {
   pointer-events: none;
   clip-path: circle(36%);
   width: 90%;
