@@ -25,6 +25,8 @@ interface IState {
   localStream?: MediaStream;
 }
 
+const ICON_SIZE = 110;
+
 class Participation extends React.PureComponent<IProps, IState> {
   private _videoRef = React.createRef<HTMLVideoElement | any>();
   private _canvasRef = React.createRef<HTMLCanvasElement | any>();
@@ -70,9 +72,35 @@ class Participation extends React.PureComponent<IProps, IState> {
     const canvas = this._canvasRef.current;
 
     const context = canvas.getContext("2d");
-    canvas.width = 110;
-    canvas.height = 110;
-    context?.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    let sWidth;
+    let sHeight;
+    let sX;
+    let sY;
+
+    if (video.videoWidth <= video.videoHeight) {
+      sX = 0;
+      sY = (video.videoHeight - video.videoWidth) / 2;
+      sWidth = video.videoWidth;
+      sHeight = video.videoWidth;
+    } else {
+      sX = (video.videoWidth - video.videoHeight) / 2;
+      sY = 0;
+      sWidth = video.videoHeight;
+      sHeight = video.videoHeight;
+    }
+
+    context?.drawImage(
+      video,
+      sX,
+      sY,
+      sWidth,
+      sHeight,
+      0,
+      0,
+      ICON_SIZE,
+      ICON_SIZE
+    );
     const dataURL = canvas.toDataURL();
 
     this.setState({ isParticipating: true });
@@ -100,7 +128,11 @@ class Participation extends React.PureComponent<IProps, IState> {
             muted={true}
             ref={this._videoRef}
           />
-          <canvas ref={this._canvasRef}></canvas>
+          <canvas
+            ref={this._canvasRef}
+            width={ICON_SIZE}
+            height={ICON_SIZE}
+          ></canvas>
         </div>
         {error ? (
           <label className="participation__error">{error}</label>
