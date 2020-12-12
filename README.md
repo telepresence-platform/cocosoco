@@ -8,4 +8,4 @@ iPad:safari <br>
 
 ・PC <br>
 mac:chrome,firefox,safari <br>
-windows:firefox, chrome, edge <br>
+windows:firefox <br>
