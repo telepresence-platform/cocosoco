@@ -112,9 +112,9 @@ export const reducer = reducerWithInitialState(initialState)
     const peerId = state.localPeer?.id;
 
     const audiences = state.audiences.map(a =>
-      a.peerId === peerId ? { peerId, stream: localStream } : a
+      a.peerId === peerId ? Object.assign({}, a, { stream: localStream }) : a
     );
-    const presenter = audiences.find(a => a.peerId === peerId);
+    const presenter = audiences.find(a => a.peerId === state.presenter?.peerId);
 
     updateVideoStreamEnabled(
       localStream,
