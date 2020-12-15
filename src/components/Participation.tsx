@@ -8,6 +8,7 @@ import { TStore } from "../store";
 import { participate } from "../actions";
 import { InitializeMap } from "../actions";
 
+import logo from "./Pointing.png";
 import "./Participation.css";
 
 interface IProps {
@@ -122,6 +123,7 @@ class Participation extends React.PureComponent<IProps, IState> {
 
     return (
       <section className="participation">
+        <img className="participation__pointing-image" src={logo} />
         <div className="participation__capture">
           <video
             className="participation__video"
