@@ -15,14 +15,15 @@ import "./MapPanel.css";
 interface IProps {
   map?: Map;
   isMapEnabled: boolean;
+  isPresenterMapEnabled: boolean;
 }
 const AnyReactComponent = ({ pinImage }: any) => {
   return <img src={pinImage} alt="current position" />;
 };
 class MapPanel extends React.PureComponent<IProps> {
   render() {
-    const { isMapEnabled, map } = this.props;
-    const className = isMapEnabled ? "mappanel" : "mappanel--disabled";
+    const { isPresenterMapEnabled, map } = this.props;
+    const className = isPresenterMapEnabled ? "mappanel" : "mappanel--disabled";
 
     if (!map) {
       return null;
@@ -50,6 +51,7 @@ class MapPanel extends React.PureComponent<IProps> {
 const mapStateToProps = (store: TStore) => {
   return {
     isMapEnabled: store.state.isMapEnabled,
+    isPresenterMapEnabled: store.state.isPresenterMapEnabled,
     map: store.state.map,
   };
 };
