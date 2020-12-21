@@ -5,6 +5,7 @@ import Peer from "skyway-js";
 import { actionCreatorFactory } from "../node_modules/typescript-fsa";
 
 import { nextVideoStream } from "./lib/video";
+import { IState } from "./reducer";
 import { TStore } from "./store";
 
 const actionCreator = actionCreatorFactory();
@@ -77,6 +78,9 @@ export const OnMapLocationChangedAction = actionCreator<{
   lat: number;
   lng: number;
 }>("ON_MAP_LOCATION_CHANGED");
+export const OnMapLocationMutedAction = actionCreator<{
+  isMapEnabled: boolean;
+}>("ON_MAP_MUTED_UPDATED");
 export const OnIconUpdatedAction = actionCreator<{
   dataURL: string;
   peerId: string;
@@ -165,11 +169,16 @@ export function selectPeer(peerId: string) {
     try {
       dispatch(SelectPeerAction.started(params));
 
-      const room = getState()?.state.room;
+      const state = getState()?.state;
+      const room = state.room;
+
       if (room) {
         room.send({ type: "peer-selected", peerId });
         // As the room.send does not send to the local peer, update manually.
         dispatch(OnPeerSelectedAction({ peerId }));
+        if (peerId === state.localPeer?.id) {
+          updateLocationMuting(dispatch, room, state.isMapEnabled);
+        }
       }
 
       dispatch(SelectPeerAction.done({ result: {}, params }));
@@ -317,7 +326,12 @@ export function toggleMapMuting() {
       dispatch(ToggleMapMutingAction.started(params));
 
       const state = getState()?.state;
-      const isEnabled = !state?.isMapEnabled;
+      const room = state.room;
+      const isEnabled = !state.isMapEnabled;
+
+      if (amIPresenter(state) && room) {
+        updateLocationMuting(dispatch, room, isEnabled);
+      }
 
       const result = { isEnabled };
 
@@ -350,9 +364,7 @@ export function InitializeMap(key: string) {
           return;
         }
 
-        const presenter = state.presenter?.peerId;
-        const localpeer = state.localPeer?.id;
-        if (presenter === localpeer) {
+        if (amIPresenter(state)) {
           state.room?.send({
             type: "location-changed",
             lat: pos.coords.latitude,
@@ -372,6 +384,25 @@ export function InitializeMap(key: string) {
       dispatch(InitializeMapAction.failed({ error, params }));
     }
   };
+}
+
+function amIPresenter(state: IState) {
+  if (!state.presenter?.peerId || !state.localPeer?.id) {
+    return false;
+  }
+  return state.presenter.peerId === state.localPeer.id;
+}
+
+function updateLocationMuting(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  room: SFURoom | MeshRoom,
+  isMapEnabled: boolean
+) {
+  room.send({
+    type: "location-muted",
+    isMapEnabled: isMapEnabled,
+  });
+  dispatch(OnMapLocationMutedAction({ isMapEnabled }));
 }
 
 function onStream(
@@ -396,6 +427,10 @@ function onStream(
       type: "peer-selected",
       peerId: store.state.presenter.peerId,
     });
+    store.state.room?.send({
+      type: "location-muted",
+      isMapEnabled: store.state.isPresenterMapEnabled,
+    });
   }
 }
 
@@ -403,6 +438,10 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
   switch (data.type) {
     case "location-changed": {
       dispatch(OnMapLocationChangedAction({ lat: data.lat, lng: data.lng }));
+      break;
+    }
+    case "location-muted": {
+      dispatch(OnMapLocationMutedAction({ isMapEnabled: data.isMapEnabled }));
       break;
     }
     case "icon-updated": {
