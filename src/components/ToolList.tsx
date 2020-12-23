@@ -19,50 +19,34 @@ interface IProps {
 class ToolList extends React.PureComponent<IProps> {
   render() {
     const { presenter, localPeer } = this.props;
-    let amIPresenter;
 
     if (!localPeer?.id) {
       return null;
     }
 
-    if (presenter?.peerId === localPeer?.id) {
-      amIPresenter = true;
-    } else {
-      amIPresenter = null;
-    }
+    const amIPresenter = presenter?.peerId === localPeer?.id;
 
-    console.log(presenter?.peerId);
-    console.log(localPeer?.id);
-    console.log(amIPresenter);
-
-    return (
-      <div>
-        {amIPresenter ? (
-          <ul className="tool-list">
-            <ToolItem>
-              <CameraSwitching />
-            </ToolItem>
-            <ToolItem>
-              <MapMuting />
-            </ToolItem>
-            <ToolItem>
-              <CameraMuting />
-            </ToolItem>
-            <ToolItem>
-              <AudioMuting />
-            </ToolItem>
-          </ul>
-        ) : (
-          <ul className="tool-list">
-            <ToolItem>
-              <MapMuting />
-            </ToolItem>
-            <ToolItem>
-              <CameraMuting />
-            </ToolItem>
-          </ul>
-        )}
-      </div>
+    return amIPresenter ? (
+      <ul className="tool-list tool-list--presenter">
+        <ToolItem>
+          <CameraSwitching />
+        </ToolItem>
+        <ToolItem>
+          <CameraMuting />
+        </ToolItem>
+        <ToolItem>
+          <MapMuting />
+        </ToolItem>
+        <ToolItem>
+          <AudioMuting />
+        </ToolItem>
+      </ul>
+    ) : (
+      <ul className="tool-list">
+        <ToolItem>
+          <AudioMuting />
+        </ToolItem>
+      </ul>
     );
   }
 }
