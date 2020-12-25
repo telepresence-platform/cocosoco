@@ -6,14 +6,12 @@ import { AnyAction } from "redux";
 import { nextVideoStream } from "../lib/video";
 import { TStore } from "../store";
 import { participate } from "../actions";
-import { InitializeMap } from "../actions";
 
 import logo from "./Pointing.png";
 import "./Participation.css";
 
 interface IProps {
   participate: any;
-  InitializeMap: any;
 }
 
 interface IState {
@@ -66,7 +64,7 @@ class Participation extends React.PureComponent<IProps, IState> {
   }
 
   _onClick() {
-    const { participate, InitializeMap } = this.props;
+    const { participate } = this.props;
     const { key, mapkey, network, room, localStream } = this.state;
 
     const video = this._videoRef.current;
@@ -105,8 +103,7 @@ class Participation extends React.PureComponent<IProps, IState> {
     const dataURL = canvas.toDataURL();
 
     this.setState({ isParticipating: true });
-    participate(key, network, room, dataURL, localStream);
-    InitializeMap(mapkey);
+    participate(key, mapkey, network, room, dataURL, localStream);
   }
 
   async componentDidMount(): Promise<void> {
@@ -158,15 +155,13 @@ const mapDispatchToProps = (
 ) => ({
   participate: (
     key: string,
+    mapkey: string,
     network: "mesh" | "sfu",
     room: string,
     dataURL: string,
     localStream: MediaStream
   ) => {
-    dispatch(participate(key, network, room, dataURL, localStream));
-  },
-  InitializeMap: (mapkey: string) => {
-    dispatch(InitializeMap(mapkey));
+    dispatch(participate(key, mapkey, network, room, dataURL, localStream));
   },
 });
 

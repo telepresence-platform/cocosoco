@@ -26,6 +26,7 @@ export const ParticipateAction = actionCreator.async<
     localStream: MediaStream;
     room: any;
     dataURL: string;
+    mapkey: string;
   },
   { error: any }
 >("PARTICIPATE");
@@ -64,20 +65,13 @@ export const ToggleMapMutingAction = actionCreator.async<
   { isEnabled: boolean },
   { error: any }
 >("TOGGLE_MAP_MUTING");
-export const InitializeMapAction = actionCreator.async<
-  {},
-  {
-    key: string;
-    lat: number;
-    lng: number;
-    defaultZoom: number;
-  },
-  { error: any }
->("INITIALIZE_MAP");
 export const OnMapLocationChangedAction = actionCreator<{
   lat: number;
   lng: number;
 }>("ON_MAP_LOCATION_CHANGED");
+export const OnMapLocationWatchedAction = actionCreator<{
+  watchId: number | null;
+}>("ON_MAP_LOCATION_WATCHID");
 export const OnMapLocationMutedAction = actionCreator<{
   isMapEnabled: boolean;
 }>("ON_MAP_MUTED_UPDATED");
@@ -98,6 +92,7 @@ const pointingTimerMap = new Map();
 
 export function participate(
   key: string,
+  mapkey: string,
   network: "mesh" | "sfu",
   roomId: string,
   dataURL: string,
@@ -107,7 +102,7 @@ export function participate(
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
     getState: () => TStore
   ) => {
-    const params = { key, network, roomId, dataURL, localStream };
+    const params = { key, mapkey, network, roomId, dataURL, localStream };
     try {
       dispatch(ParticipateAction.started(params));
       const localPeer: Peer = await new Promise(r => {
@@ -129,6 +124,7 @@ export function participate(
         localStream,
         room,
         dataURL,
+        mapkey,
       };
 
       dispatch(ParticipateAction.done({ result, params }));
@@ -328,6 +324,14 @@ export function toggleMapMuting() {
       const state = getState()?.state;
       const room = state.room;
       const isEnabled = !state.isMapEnabled;
+      const watchId = state.map.watchId;
+
+      if (isEnabled) {
+        ActivateMap(dispatch, getState);
+      } else if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        OnMapLocationWatchedAction({ watchId: null });
+      }
 
       if (amIPresenter(state) && room) {
         updateLocationMuting(dispatch, room, isEnabled);
@@ -342,48 +346,32 @@ export function toggleMapMuting() {
   };
 }
 
-export function InitializeMap(key: string) {
-  return async (
-    dispatch: ThunkDispatch<TStore, void, AnyAction>,
-    getState: () => TStore
-  ) => {
-    const params = {};
+async function ActivateMap(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  getState: () => TStore
+) {
+  const state = getState()?.state;
+  const room = state.room;
 
-    try {
-      dispatch(InitializeMapAction.started(params));
-      const defaultZoom = 12;
-      const { lat, lng } = await new Promise(resolve =>
-        navigator.geolocation.getCurrentPosition(pos => {
-          resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        })
-      );
-      navigator.geolocation.watchPosition(pos => {
-        const state = getState()?.state;
+  const { lat, lng } = await new Promise(resolve =>
+    navigator.geolocation.getCurrentPosition(pos => {
+      resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+    })
+  );
 
-        if (!state) {
-          return;
-        }
+  const watchId = navigator.geolocation.watchPosition(pos => {
+    const state = getState()?.state;
 
-        if (amIPresenter(state)) {
-          state.room?.send({
-            type: "location-changed",
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-          dispatch(
-            OnMapLocationChangedAction({
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            })
-          );
-        }
-      });
-      const result = { key, lat, lng, defaultZoom };
-      dispatch(InitializeMapAction.done({ result, params }));
-    } catch (error) {
-      dispatch(InitializeMapAction.failed({ error, params }));
+    if (state && amIPresenter(state) && room) {
+      updateLocation(dispatch, room, pos.coords.latitude, pos.coords.longitude);
     }
-  };
+  });
+
+  dispatch(OnMapLocationWatchedAction({ watchId }));
+
+  if (room) {
+    updateLocation(dispatch, room, lat, lng);
+  }
 }
 
 function amIPresenter(state: IState) {
@@ -391,6 +379,25 @@ function amIPresenter(state: IState) {
     return false;
   }
   return state.presenter.peerId === state.localPeer.id;
+}
+
+function updateLocation(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  room: SFURoom | MeshRoom,
+  lat: number,
+  lng: number
+) {
+  room.send({
+    type: "location-changed",
+    lat,
+    lng,
+  });
+  dispatch(
+    OnMapLocationChangedAction({
+      lat,
+      lng,
+    })
+  );
 }
 
 function updateLocationMuting(
@@ -430,6 +437,11 @@ function onStream(
     store.state.room?.send({
       type: "location-muted",
       isMapEnabled: store.state.isPresenterMapEnabled,
+    });
+    store.state.room?.send({
+      type: "location-changed",
+      lat: store.state.map.lat,
+      lng: store.state.map.lng,
     });
   }
 }

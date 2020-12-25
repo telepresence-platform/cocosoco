@@ -6,14 +6,13 @@ import { AnyAction } from "redux";
 
 import { TStore } from "../store";
 import { toggleMapMuting } from "../actions";
-import { InitializeMap } from "../actions";
 import { Map } from "../types";
 
 import pinImage from "./pin_leg.png";
 import "./MapPanel.css";
 
 interface IProps {
-  map?: Map;
+  map: Map;
   isMapEnabled: boolean;
   isPresenterMapEnabled: boolean;
 }
@@ -23,11 +22,12 @@ const AnyReactComponent = ({ pinImage }: any) => {
 class MapPanel extends React.PureComponent<IProps> {
   render() {
     const { isPresenterMapEnabled, map } = this.props;
-    const className = isPresenterMapEnabled ? "mappanel" : "mappanel--disabled";
 
-    if (!map) {
+    if (!map.key) {
       return null;
     }
+
+    const className = isPresenterMapEnabled ? "mappanel" : "mappanel--disabled";
 
     return (
       <div className={className}>
@@ -59,9 +59,6 @@ const mapStateToProps = (store: TStore) => {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
-  InitializeMap: (key: string) => {
-    dispatch(InitializeMap(key));
-  },
   toggleMapMuting: () => {
     dispatch(toggleMapMuting());
   },

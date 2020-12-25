@@ -12,10 +12,10 @@ import {
   ToggleMapMutingAction,
   OnMapLocationChangedAction,
   OnMapLocationMutedAction,
+  OnMapLocationWatchedAction,
   OnIconUpdatedAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
-  InitializeMapAction,
 } from "./actions";
 import { Map, Member, Pointing, Transform } from "./types";
 
@@ -29,7 +29,7 @@ export interface IState {
   localStream?: MediaStream;
   room?: SFURoom | MeshRoom;
   pointings: Pointing[];
-  map?: Map;
+  map: Map;
   presenter?: Member;
   transform: Transform;
   // Don't use this. The reason why we need this variable is because the `peer-selected`
@@ -41,9 +41,10 @@ const initialState: IState = {
   audiences: [],
   isAudioEnabled: true,
   isCameraEnabled: true,
-  isMapEnabled: true,
+  isMapEnabled: false,
   isPresenterMapEnabled: false,
   pointings: [],
+  map: { lat: 0, lng: 0, defaultZoom: 12, watchId: null },
   transform: { x: 0, y: 0, scale: 1 },
 };
 
@@ -78,7 +79,7 @@ export const reducer = reducerWithInitialState(initialState)
     });
   })
   .case(ParticipateAction.done, (state, { result }) => {
-    const { localPeer, localStream, room, dataURL } = result;
+    const { localPeer, localStream, room, dataURL, mapkey } = result;
 
     for (const track of localStream.getVideoTracks() || []) {
       track.enabled = false;
@@ -90,11 +91,13 @@ export const reducer = reducerWithInitialState(initialState)
       dataURL: dataURL,
     };
     const audiences = [audience];
+    const map = Object.assign({}, state.map, { key: mapkey });
 
     return Object.assign({}, state, {
       audiences,
       localPeer,
       localStream,
+      map,
       room,
     });
   })
@@ -155,6 +158,11 @@ export const reducer = reducerWithInitialState(initialState)
       map: Object.assign({}, state.map, { lat, lng }),
     });
   })
+  .case(OnMapLocationWatchedAction, (state, { watchId }) => {
+    return Object.assign({}, state, {
+      map: Object.assign({}, state.map, { watchId }),
+    });
+  })
   .case(OnMapLocationMutedAction, (state, { isMapEnabled }) => {
     return Object.assign({}, state, { isPresenterMapEnabled: isMapEnabled });
   })
@@ -187,10 +195,6 @@ export const reducer = reducerWithInitialState(initialState)
       transform: initialState.transform,
       _selectedPeerId: peerId,
     });
-  })
-  .case(InitializeMapAction.done, (state, { result }) => {
-    const { key, lat, lng, defaultZoom } = result;
-    return Object.assign({}, state, { map: { key, lat, lng, defaultZoom } });
   })
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
