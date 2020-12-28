@@ -1,8 +1,9 @@
 export interface Map {
-  key: string;
+  key?: string;
   lat: number;
   lng: number;
   defaultZoom: number;
+  watchId: number | null;
 }
 
 export interface Member {
