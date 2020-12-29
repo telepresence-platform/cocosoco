@@ -1,5 +1,6 @@
 import React from "react";
 
+import PresenterSelecting from "./PresenterSelecting";
 import AudienceList from "./AudienceList";
 import MapPanel from "./MapPanel";
 import Presenter from "./Presenter";
@@ -15,6 +16,7 @@ class Room extends React.PureComponent {
         <Presenter />
         <MapPanel />
         <AudienceList />
+        <PresenterSelecting />
       </section>
     );
   }
