@@ -82,7 +82,7 @@ export const reducer = reducerWithInitialState(initialState)
     const { localPeer, localStream, room, dataURL, mapkey } = result;
 
     for (const track of localStream.getVideoTracks() || []) {
-      track.enabled = false;
+      track.enabled = true;
     }
 
     const audience = {
@@ -210,9 +210,9 @@ function updateVideoStreamEnabled(
     return;
   }
 
-  const isEnabled: boolean = !!(
-    isCameraEnabled && localPeer?.id === presenter?.peerId
-  );
+  const isEnabled: boolean =
+    !presenter || !!(isCameraEnabled && localPeer?.id === presenter.peerId);
+
   for (const track of localStream.getVideoTracks() || []) {
     track.enabled = isEnabled;
   }
