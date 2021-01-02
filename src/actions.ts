@@ -311,6 +311,7 @@ export function toggleCameraMuting() {
     }
   };
 }
+
 export function toggleMapMuting() {
   return async (
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
