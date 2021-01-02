@@ -172,10 +172,7 @@ export function selectPeer(peerId: string) {
         room.send({ type: "peer-selected", peerId });
         // As the room.send does not send to the local peer, update manually.
         dispatch(OnPeerSelectedAction({ peerId }));
-
-        if (!peerId) {
-          updateLocationMuting(dispatch, room, false);
-        } else if (peerId === state.localPeer?.id) {
+        if (peerId === state.localPeer?.id) {
           updateLocationMuting(dispatch, room, state.isMapEnabled);
         }
       }

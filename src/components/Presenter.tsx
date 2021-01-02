@@ -129,38 +129,35 @@ class Presenter extends React.PureComponent<IProps> {
     });
   }
 
-  _updateVideo() {
-    const video = this._videoRef.current;
-    if (!video) {
-      return;
-    }
-
-    const { presenter } = this.props;
-    video.muted = this._amIPresenter();
-    video.srcObject = presenter?.stream;
-    video.playsInline = true;
-    video.play();
-  }
-
   componentDidMount() {
     const area = this._getVideoArea();
     if (!area) {
       return null;
     }
 
-    this._updateVideo();
-
     // We can't get layerX/layerY from React mouse event.
     area.addEventListener("click", this._onClick);
   }
 
   componentDidUpdate(prevProps: IProps) {
+    const video = this._videoRef.current;
+    if (!video) {
+      return;
+    }
+
     const { presenter } = this.props;
     if (prevProps.presenter === presenter) {
       return;
     }
 
-    this._updateVideo();
+    if (presenter) {
+      video.muted = this._amIPresenter();
+      video.srcObject = presenter.stream;
+      video.playsInline = true;
+      video.play();
+    } else {
+      video.srcObject = null;
+    }
   }
 
   render() {

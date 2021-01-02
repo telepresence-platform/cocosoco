@@ -31,7 +31,7 @@ class AudienceItem extends React.PureComponent<IProps> {
     selectPeer(audience.peerId);
   }
 
-  componentDidMount() {
+  _updateVideo() {
     const video = this._videoRef.current;
     if (!video) {
       return;
@@ -41,6 +41,14 @@ class AudienceItem extends React.PureComponent<IProps> {
     video.srcObject = audience.stream;
     video.playsInline = true;
     video.play();
+  }
+
+  componentDidMount() {
+    this._updateVideo();
+  }
+
+  componentDidUpdate() {
+    this._updateVideo();
   }
 
   render() {

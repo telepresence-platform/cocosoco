@@ -20,16 +20,14 @@ class AudienceList extends React.PureComponent<IProps> {
 
     return (
       <ul className="audience-list">
-        {audiences.map(audience => {
-          return audience.stream ? (
-            <AudienceItem
-              key={audience.peerId}
-              audience={audience}
-              isMuted={audience.peerId === localPeer?.id}
-              isSelected={audience.peerId === presenter?.peerId}
-            />
-          ) : null;
-        })}
+        {audiences.map(audience => (
+          <AudienceItem
+            key={audience.peerId}
+            audience={audience}
+            isMuted={audience.peerId === localPeer?.id}
+            isSelected={audience.peerId === presenter?.peerId}
+          />
+        ))}
       </ul>
     );
   }
