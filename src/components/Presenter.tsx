@@ -6,17 +6,20 @@ import { AnyAction } from "redux";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 import { TStore } from "../store";
-import { Member, Pointing, Transform } from "../types";
-import { setPointing, setTransform } from "../actions";
+import { Like, Member, Pointing, Transform } from "../types";
+import { setLike, setPointing, setTransform } from "../actions";
+import LikeComponent from "./Like";
 import PointingComponent from "./Pointing";
 
 import "./Presenter.css";
 
 interface IProps {
+  likes: Like[];
   localPeer?: Peer;
   pointings: Pointing[];
   presenter?: Member;
   transform: Transform;
+  setLike: any;
   setPointing: any;
   setTransform: any;
 }
@@ -25,12 +28,15 @@ class Presenter extends React.PureComponent<IProps> {
   // As video.playsInline is not defined in HTMLVideoElement, add "any" as well.
   private _videoRef = React.createRef<HTMLVideoElement | any>();
 
+  private _mouseTimer = 0;
+  private _isLikeAction = false;
   private _panStopTimer = 0;
 
   constructor(props: IProps) {
     super(props);
 
-    this._onClick = this._onClick.bind(this);
+    this._onMouseDown = this._onMouseDown.bind(this);
+    this._onMouseUp = this._onMouseUp.bind(this);
     this._onPanningStop = this._onPanningStop.bind(this);
     this._onZoomChange = this._onZoomChange.bind(this);
   }
@@ -56,12 +62,34 @@ class Presenter extends React.PureComponent<IProps> {
     );
   }
 
-  _onClick(e: any) {
+  _onMouseAction(e: any, isLikeAction: boolean) {
     const { target, layerX, layerY } = e;
     const { clientWidth, clientHeight } = target;
     const x = layerX / clientWidth;
     const y = layerY / clientHeight;
-    this.props.setPointing(x, y);
+
+    if (isLikeAction) {
+      this.props.setLike(x, y);
+    } else {
+      this.props.setPointing(x, y);
+    }
+  }
+
+  _onMouseDown(e: any) {
+    this._mouseTimer = window.setTimeout(() => {
+      this._onMouseAction(e, true);
+      this._isLikeAction = true;
+    }, 500);
+  }
+
+  _onMouseUp(e: any) {
+    window.clearTimeout(this._mouseTimer);
+
+    if (!this._isLikeAction) {
+      this._onMouseAction(e, false);
+    }
+
+    this._isLikeAction = false;
   }
 
   /**
@@ -104,6 +132,22 @@ class Presenter extends React.PureComponent<IProps> {
     this.props.setTransform(x, y, scale);
   }
 
+  _renderLikes() {
+    const area = this._getVideoArea();
+    if (!area) {
+      return null;
+    }
+
+    const { likes } = this.props;
+    return likes.map(p => {
+      const id = p.id;
+      const x = area.offsetLeft + area.clientWidth * p.x;
+      const y = area.offsetTop + area.clientHeight * p.y;
+
+      return <LikeComponent key={id} x={x} y={y} />;
+    });
+  }
+
   _renderPointings() {
     const area = this._getVideoArea();
     if (!area) {
@@ -136,7 +180,8 @@ class Presenter extends React.PureComponent<IProps> {
     }
 
     // We can't get layerX/layerY from React mouse event.
-    area.addEventListener("click", this._onClick);
+    area.addEventListener("mousedown", this._onMouseDown);
+    area.addEventListener("mouseup", this._onMouseUp);
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -197,6 +242,7 @@ class Presenter extends React.PureComponent<IProps> {
             <video className="presenter__video" ref={this._videoRef}></video>
           </TransformComponent>
         </TransformWrapper>
+        {this._renderLikes()}
         {this._renderPointings()}
       </section>
     );
@@ -205,6 +251,7 @@ class Presenter extends React.PureComponent<IProps> {
 
 const mapStateToProps = (store: TStore) => {
   return {
+    likes: store.state.likes,
     localPeer: store.state.localPeer,
     pointings: store.state.pointings,
     presenter: store.state.presenter,
@@ -215,6 +262,9 @@ const mapStateToProps = (store: TStore) => {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
+  setLike: (x: number, y: number) => {
+    dispatch(setLike(x, y));
+  },
   setPointing: (x: number, y: number) => {
     dispatch(setPointing(x, y));
   },

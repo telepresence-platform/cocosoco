@@ -1,9 +1,11 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
 import {
+  AddLikeAction,
   AddPeerAction,
   AddPointingAction,
   ParticipateAction,
+  RemoveLikeAction,
   RemovePeerAction,
   RemovePointingAction,
   SwitchCameraAction,
@@ -17,7 +19,7 @@ import {
   OnPeerSelectedAction,
   OnTransformChangedAction,
 } from "./actions";
-import { Map, Member, Pointing, Transform } from "./types";
+import { Like, Map, Member, Pointing, Transform } from "./types";
 
 export interface IState {
   audiences: Member[];
@@ -25,6 +27,7 @@ export interface IState {
   isCameraEnabled: boolean;
   isMapEnabled: boolean;
   isPresenterMapEnabled: boolean;
+  likes: Like[];
   localPeer?: Peer;
   localStream?: MediaStream;
   room?: SFURoom | MeshRoom;
@@ -43,12 +46,20 @@ const initialState: IState = {
   isCameraEnabled: true,
   isMapEnabled: false,
   isPresenterMapEnabled: false,
+  likes: [],
   pointings: [],
   map: { lat: 0, lng: 0, defaultZoom: 12, watchId: null },
   transform: { x: 0, y: 0, scale: 1 },
 };
 
 export const reducer = reducerWithInitialState(initialState)
+  .case(AddLikeAction.done, (state, { result }) => {
+    const { id, x, y } = result;
+
+    return Object.assign({}, state, {
+      likes: [...state.likes, { id, x, y }],
+    });
+  })
   .case(AddPeerAction, (state, { peerId, stream }) => {
     const index = state.audiences.findIndex(a => a.peerId === peerId);
     let audience;
@@ -100,6 +111,11 @@ export const reducer = reducerWithInitialState(initialState)
       map,
       room,
     });
+  })
+  .case(RemoveLikeAction, (state, { id }) => {
+    const likes = state.likes.filter(p => p.id !== id);
+
+    return Object.assign({}, state, { likes });
   })
   .case(RemovePeerAction, (state, { peerId }) => {
     const audiences = state.audiences.filter(a => a.peerId !== peerId);

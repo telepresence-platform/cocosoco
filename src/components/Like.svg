@@ -1,0 +1,268 @@
+<svg viewBox="0 0 59 59" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    #heart {
+      transform-origin: center;
+      transform: scale(0.2);
+      fill: #E2264D;
+      animation: heart .3s linear forwards .25s;
+    }
+
+    @keyframes heart {
+      0% {
+      transform: scale(0.2);
+      }
+      40% {
+        transform: scale(1.2);
+      }
+      100% {
+      transform: scale(1);
+      }
+    }
+
+    #main-circ {
+      transform-origin: 29.5px 29.5px;
+      animation: circle .3s linear forwards;
+      opacity: 1;
+    }
+
+    @keyframes circle {
+      40% {
+        transform: scale(10);
+        opacity: 1;
+        fill: #DD4688;
+      }
+      55% {
+        transform: scale(11);
+        opacity: 1;
+        fill: #D46ABF;
+      }
+      65% {
+        transform: scale(12);
+        opacity: 1;
+        fill: #CC8EF5;
+      }
+      75% {
+        transform: scale(13);
+        opacity: 1;
+        fill: transparent;
+        stroke: #CC8EF5;
+        stroke-width: .5;
+      }
+      85% {
+        transform: scale(17);
+        opacity: 1;
+        fill: transparent;
+        stroke: #CC8EF5;
+        stroke-width: .2;
+      }
+      95% {
+        transform: scale(18);
+        opacity: 1;
+        fill: transparent;
+        stroke: #CC8EF5;
+        stroke-width: .1;
+      }
+      100% {
+        transform: scale(19);
+        opacity: 1;
+        fill: transparent;
+        stroke: #CC8EF5;
+        stroke-width: 0;
+      }
+    }
+
+    .sparks {
+      animation: sparks .1s ease .3s forwards;
+    }
+
+    @keyframes sparks {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .sparks circle {
+      transform-origin: 0 0 0;
+    }
+
+    #grp1 #oval1 {
+      animation: spark_1_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_1_1 {
+      to {
+        transform: scale(0) translate(0px, -30px);
+      }
+    }
+
+    #grp1 #oval2 {
+      animation: spark_1_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_1_2 {
+      to {
+        transform: scale(0) translate(10px, -50px);
+      }
+    }
+
+    #grp2 #oval1 {
+      animation: spark_2_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_2_1 {
+      to {
+        transform: scale(0) translate(30px, -15px);
+      }
+    }
+
+    #grp2 #oval2 {
+      animation: spark_2_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_2_2 {
+      to {
+        transform: scale(0) translate(60px, -15px);
+      }
+    }
+
+    #grp3 #oval1 {
+      animation: spark_3_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_3_1 {
+      to {
+        transform: scale(0) translate(30px, 0px);
+      }
+    }
+
+    #grp3 #oval2 {
+      animation: spark_3_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_3_2 {
+      to {
+        transform: scale(0) translate(60px, 10px);
+      }
+    }
+
+    #grp4 #oval1 {
+      animation: spark_4_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_4_1 {
+      to {
+        transform: scale(0) translate(30px, 15px);
+      }
+    }
+
+    #grp4 #oval2 {
+      animation: spark_4_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_4_2 {
+      to {
+        transform: scale(0) translate(40px, 50px);
+      }
+    }
+
+    #grp5 #oval1 {
+      animation: spark_5_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_5_1 {
+      to {
+        transform: scale(0) translate(-10px, 20px);
+      }
+    }
+
+    #grp5 #oval2 {
+      animation: spark_5_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_5_2 {
+      to {
+        transform: scale(0) translate(-60px, 30px);
+      }
+    }
+
+    #grp6 #oval1 {
+      animation: spark_6_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_6_1 {
+      to {
+        transform: scale(0) translate(-30px, 0px);
+      }
+    }
+
+    #grp6 #oval2 {
+      animation: spark_6_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_6_2 {
+      to {
+        transform: scale(0) translate(-60px, -5px);
+      }
+    }
+
+    #grp7 #oval1 {
+      animation: spark_7_1 .5s ease .3s forwards;
+    }
+
+    @keyframes spark_7_1 {
+      to {
+        transform: scale(0) translate(-30px, -15px);
+      }
+    }
+
+    #grp7 #oval2 {
+      animation: spark_7_2 1.5s ease .3s forwards;
+    }
+
+    @keyframes spark_7_2 {
+      to {
+        transform: scale(0) translate(-55px, -30px);
+      }
+    }
+  </style>
+
+  <g fill="none" fill-rule="evenodd" transform="scale(0.5) translate(29.5 29.5)">
+    <path d="M29.144 20.773c-.063-.13-4.227-8.67-11.44-2.59C7.63 28.795 28.94 43.256 29.143 43.394c.204-.138 21.513-14.6 11.44-25.213-7.214-6.08-11.377 2.46-11.44 2.59z" id="heart" fill="#AAB8C2"/>
+    <circle id="main-circ" fill="#E2264D" opacity="0" cx="29.5" cy="29.5" r="1.5"/>
+
+    <g id="grp7" class="sparks" opacity="0" transform="translate(7 6)">
+      <circle id="oval1" fill="#9CD8C3" cx="2" cy="6" r="2"/>
+      <circle id="oval2" fill="#8CE8C3" cx="5" cy="2" r="2"/>
+    </g>
+
+    <g id="grp6" class="sparks" opacity="0" transform="translate(0 28)">
+      <circle id="oval1" fill="#CC8EF5" cx="2" cy="7" r="2"/>
+      <circle id="oval2" fill="#91D2FA" cx="3" cy="2" r="2"/>
+    </g>
+
+    <g id="grp3" class="sparks" opacity="0" transform="translate(52 28)">
+      <circle id="oval2" fill="#9CD8C3" cx="2" cy="7" r="2"/>
+      <circle id="oval1" fill="#8CE8C3" cx="4" cy="2" r="2"/>
+    </g>
+
+    <g id="grp2" class="sparks" opacity="0" transform="translate(44 6)">
+      <circle id="oval2" fill="#CC8EF5" cx="5" cy="6" r="2"/>
+      <circle id="oval1" fill="#CC8EF5" cx="2" cy="2" r="2"/>
+    </g>
+
+    <g id="grp5" class="sparks" opacity="0" transform="translate(14 50)">
+      <circle id="oval1" fill="#91D2FA" cx="6" cy="5" r="2"/>
+      <circle id="oval2" fill="#91D2FA" cx="2" cy="2" r="2"/>
+    </g>
+
+    <g id="grp4" class="sparks" opacity="0" transform="translate(35 50)">
+      <circle id="oval1" fill="#F48EA7" cx="6" cy="5" r="2"/>
+      <circle id="oval2" fill="#F48EA7" cx="2" cy="2" r="2"/>
+    </g>
+
+    <g id="grp1" class="sparks" opacity="0" transform="translate(24)">
+      <circle id="oval1" fill="#9FC7FA" cx="2.5" cy="3" r="2"/>
+      <circle id="oval2" fill="#9FC7FA" cx="7.5" cy="2" r="2"/>
+    </g>
+  </g>
+</svg>
