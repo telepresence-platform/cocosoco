@@ -10,6 +10,11 @@ import { TStore } from "./store";
 
 const actionCreator = actionCreatorFactory();
 
+export const AddLikeAction = actionCreator.async<
+  { id: number; x: number; y: number },
+  { id: number; x: number; y: number },
+  { error: any }
+>("ADD_LIKE");
 export const AddPeerAction = actionCreator<{
   peerId: string;
   stream: any;
@@ -30,6 +35,7 @@ export const ParticipateAction = actionCreator.async<
   },
   { error: any }
 >("PARTICIPATE");
+export const RemoveLikeAction = actionCreator<{ id: number }>("REMOVE_LIKE");
 export const RemovePeerAction = actionCreator<{ peerId: string }>(
   "REMOVE_PEER"
 );
@@ -38,6 +44,9 @@ export const RemovePointingAction = actionCreator<{ peerId: string }>(
 );
 export const SelectPeerAction = actionCreator.async<{}, {}, { error: any }>(
   "SELECT_PEER"
+);
+export const SetLikeAcrion = actionCreator.async<{}, {}, { error: any }>(
+  "SET_Like"
 );
 export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>(
   "SET_POINTING"
@@ -134,6 +143,23 @@ export function participate(
   };
 }
 
+function addLike(x: number, y: number) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+    const id = Date.now();
+    const params = { id, x, y };
+
+    try {
+      dispatch(AddLikeAction.started(params));
+
+      setTimeout(() => dispatch(RemoveLikeAction({ id })), 2000);
+
+      dispatch(AddLikeAction.done({ result: params, params }));
+    } catch (error) {
+      dispatch(AddLikeAction.failed({ error, params }));
+    }
+  };
+}
+
 function addPointing(peerId: string, x: number, y: number) {
   return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
     const params = { peerId, x, y };
@@ -180,6 +206,28 @@ export function selectPeer(peerId: string) {
       dispatch(SelectPeerAction.done({ result: {}, params }));
     } catch (error) {
       dispatch(SelectPeerAction.failed({ error, params }));
+    }
+  };
+}
+
+export function setLike(x: number, y: number) {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
+    const params = {};
+
+    try {
+      dispatch(SetLikeAcrion.started(params));
+
+      const state = getState()?.state;
+
+      state.room?.send({ type: "like-added", x, y });
+      dispatch(addLike(x, y));
+
+      dispatch(SetLikeAcrion.done({ result: {}, params }));
+    } catch (error) {
+      dispatch(SetLikeAcrion.failed({ error, params }));
     }
   };
 }
@@ -449,6 +497,10 @@ function onStream(
 
 function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
   switch (data.type) {
+    case "like-added": {
+      dispatch(addLike(data.x, data.y));
+      break;
+    }
     case "location-changed": {
       dispatch(OnMapLocationChangedAction({ lat: data.lat, lng: data.lng }));
       break;

@@ -1,3 +1,9 @@
+export interface Like {
+  id: number;
+  x: number;
+  y: number;
+}
+
 export interface Map {
   key?: string;
   lat: number;
