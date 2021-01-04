@@ -28,16 +28,16 @@ class Presenter extends React.PureComponent<IProps> {
   // As video.playsInline is not defined in HTMLVideoElement, add "any" as well.
   private _videoRef = React.createRef<HTMLVideoElement | any>();
 
-  private _mouseTimer = 0;
   private _isLikeAction = false;
   private _panStopTimer = 0;
+  private _pointingTimer = 0;
 
   constructor(props: IProps) {
     super(props);
 
-    this._onMouseDown = this._onMouseDown.bind(this);
-    this._onMouseUp = this._onMouseUp.bind(this);
     this._onPanningStop = this._onPanningStop.bind(this);
+    this._onPointingDown = this._onPointingDown.bind(this);
+    this._onPointingUp = this._onPointingUp.bind(this);
     this._onZoomChange = this._onZoomChange.bind(this);
   }
 
@@ -60,36 +60,6 @@ class Presenter extends React.PureComponent<IProps> {
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
       navigator.userAgent.toLowerCase()
     );
-  }
-
-  _onMouseAction(e: any, isLikeAction: boolean) {
-    const { target, layerX, layerY } = e;
-    const { clientWidth, clientHeight } = target;
-    const x = layerX / clientWidth;
-    const y = layerY / clientHeight;
-
-    if (isLikeAction) {
-      this.props.setLike(x, y);
-    } else {
-      this.props.setPointing(x, y);
-    }
-  }
-
-  _onMouseDown(e: any) {
-    this._mouseTimer = window.setTimeout(() => {
-      this._onMouseAction(e, true);
-      this._isLikeAction = true;
-    }, 500);
-  }
-
-  _onMouseUp(e: any) {
-    window.clearTimeout(this._mouseTimer);
-
-    if (!this._isLikeAction) {
-      this._onMouseAction(e, false);
-    }
-
-    this._isLikeAction = false;
   }
 
   /**
@@ -119,6 +89,63 @@ class Presenter extends React.PureComponent<IProps> {
       const scale = parseFloat(transform[2]);
       this._onZoomChange({ positionX, positionY, scale });
     }, 500);
+  }
+
+  _getPositionOnLayer(e: any) {
+    if (e.type.startsWith("mouse")) {
+      return { layerX: e.layerX, layerY: e.layerY };
+    }
+
+    // Touch event.
+    const touch = e.changedTouches[0];
+    let element = touch.target;
+    let layerX = 0;
+    let layerY = 0;
+
+    while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
+      layerX += element.offsetLeft - element.scrollLeft;
+      layerY += element.offsetTop - element.scrollTop;
+      element = element.offsetParent;
+    }
+
+    layerX = touch.clientX - layerX;
+    layerY = touch.clientY - layerY;
+
+    return { layerX, layerY };
+  }
+
+  _onPointingAction(e: any, actionFunction: Function) {
+    const { layerX, layerY } = this._getPositionOnLayer(e);
+    const { clientWidth, clientHeight } = e.target;
+    const x = layerX / clientWidth;
+    const y = layerY / clientHeight;
+    actionFunction(x, y);
+  }
+
+  _onPointingDown(e: any) {
+    window.clearTimeout(this._pointingTimer);
+
+    this._pointingTimer = window.setTimeout(() => {
+      this._isLikeAction = true;
+
+      if (e.type === "mousedown") {
+        // In desktop, as we can see the LIKE animation behind the cursor, accept here.
+        this._onPointingAction(e, this.props.setLike);
+      }
+    }, 500);
+  }
+
+  _onPointingUp(e: any) {
+    window.clearTimeout(this._pointingTimer);
+
+    if (!this._isLikeAction) {
+      this._onPointingAction(e, this.props.setPointing);
+    } else if (e.type === "touchend") {
+      // In mobile, as the LIKE animation will be hidden behind our finger, accept here.
+      this._onPointingAction(e, this.props.setLike);
+    }
+
+    this._isLikeAction = false;
   }
 
   _onZoomChange(e: any) {
@@ -180,8 +207,10 @@ class Presenter extends React.PureComponent<IProps> {
     }
 
     // We can't get layerX/layerY from React mouse event.
-    area.addEventListener("mousedown", this._onMouseDown);
-    area.addEventListener("mouseup", this._onMouseUp);
+    area.addEventListener("mousedown", this._onPointingDown);
+    area.addEventListener("mouseup", this._onPointingUp);
+    area.addEventListener("touchstart", this._onPointingDown);
+    area.addEventListener("touchend", this._onPointingUp);
   }
 
   componentDidUpdate(prevProps: IProps) {
