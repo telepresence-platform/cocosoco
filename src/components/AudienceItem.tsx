@@ -1,10 +1,5 @@
 import React from "react";
-import { connect } from "react-redux";
-import { ThunkDispatch } from "redux-thunk";
-import { AnyAction } from "redux";
 
-import { TStore } from "../store";
-import { selectPeer } from "../actions";
 import { Member } from "../types";
 
 import "./AudienceItem.css";
@@ -13,23 +8,11 @@ interface IProps {
   audience: Member;
   isMuted: boolean;
   isSelected: boolean;
-  selectPeer: any;
 }
 
 class AudienceItem extends React.PureComponent<IProps> {
   // As video.playsInline is not defined in HTMLVideoElement, add "any" as well.
   private _videoRef = React.createRef<HTMLVideoElement | any>();
-
-  constructor(props: IProps) {
-    super(props);
-
-    this._onClick = this._onClick.bind(this);
-  }
-
-  _onClick() {
-    const { audience, selectPeer } = this.props;
-    selectPeer(audience.peerId);
-  }
 
   _updateVideo() {
     const video = this._videoRef.current;
@@ -58,7 +41,6 @@ class AudienceItem extends React.PureComponent<IProps> {
         className={
           "audience-item " + (isSelected ? "audience-item--selected" : "")
         }
-        onClick={this._onClick}
       >
         <img src={audience.dataURL} className="audience-item__icon"></img>
         <video
@@ -71,12 +53,4 @@ class AudienceItem extends React.PureComponent<IProps> {
   }
 }
 
-const mapDispatchToProps = (
-  dispatch: ThunkDispatch<TStore, void, AnyAction>
-) => ({
-  selectPeer: (peerId: string) => {
-    dispatch(selectPeer(peerId));
-  },
-});
-
-export default connect(null, mapDispatchToProps)(AudienceItem);
+export default AudienceItem;
