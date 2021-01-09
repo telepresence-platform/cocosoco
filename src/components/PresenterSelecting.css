@@ -1,11 +1,9 @@
 .presenter-selecting {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
-  width: 13vw;
-  height: 13vw;
-  max-width: 100px;
-  max-height: 100px;
+  width: 14vw;
+  height: 14vw;
+  max-width: 120px;
+  max-height: 120px;
+  display: inline-block;
   pointer-events: auto;
   background-color: transparent;
   background-size: cover;

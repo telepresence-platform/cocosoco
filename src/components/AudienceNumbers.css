@@ -1,0 +1,16 @@
+.audience-number {
+  z-index: 1;
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  font-size: 2vw;
+  bottom: 0;
+  width: 5.5vw;
+  height: 5.5vw;
+  max-width: 50px;
+  max-height: 50px;
+  clip-path: circle(36%);
+  color: #f9f9fa;
+  background-color: #ff0039;
+}

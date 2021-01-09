@@ -1,0 +1,30 @@
+.presenter-item {
+  clip-path: circle(36%);
+  width: 14vw;
+  height: 14vw;
+  max-width: 120px;
+  max-height: 120px;
+  background-color: #f9f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ff1ad9;
+}
+
+.presenter-item__icon {
+  pointer-events: none;
+  clip-path: circle(36%);
+  width: 13vw;
+  height: 13vw;
+  max-width: 110px;
+  max-height: 110px;
+}
+
+.presenter-item--no-presenter{
+  width: 14vw;
+  height: 14vw;
+  max-width: 120px;
+  max-height: 120px;
+  clip-path: circle(36%);
+  background-color: #f9f9fa;
+}
