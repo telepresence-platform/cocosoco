@@ -29,6 +29,7 @@ class Presenter extends React.PureComponent<IProps> {
   private _videoRef = React.createRef<HTMLVideoElement | any>();
 
   private _isLikeAction = false;
+  private _isMultiTouchAction = false;
   private _panStopTimer = 0;
   private _pointingTimer = 0;
 
@@ -125,6 +126,12 @@ class Presenter extends React.PureComponent<IProps> {
   _onPointingDown(e: any) {
     window.clearTimeout(this._pointingTimer);
 
+    if (e.targetTouches?.length > 1) {
+      // Ignore multi touch action.
+      this._isMultiTouchAction = true;
+      return;
+    }
+
     this._pointingTimer = window.setTimeout(() => {
       this._isLikeAction = true;
 
@@ -138,7 +145,14 @@ class Presenter extends React.PureComponent<IProps> {
   _onPointingUp(e: any) {
     window.clearTimeout(this._pointingTimer);
 
-    if (!this._isLikeAction) {
+    if (e.targetTouches?.length > 0) {
+      // Still touching by some fingers.
+      return;
+    }
+
+    if (this._isMultiTouchAction) {
+      // Ignore multi touch action.
+    } else if (!this._isLikeAction) {
       this._onPointingAction(e, this.props.setPointing);
     } else if (e.type === "touchend") {
       // In mobile, as the LIKE animation will be hidden behind our finger, accept here.
@@ -146,6 +160,7 @@ class Presenter extends React.PureComponent<IProps> {
     }
 
     this._isLikeAction = false;
+    this._isMultiTouchAction = false;
   }
 
   _onZoomChange(e: any) {
