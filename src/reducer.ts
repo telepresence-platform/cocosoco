@@ -1,8 +1,9 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
 import {
+  AddAudience,
+  AddAudienceInPreparation,
   AddLikeAction,
-  AddPeerAction,
   AddPointingAction,
   ParticipateAction,
   RemoveLikeAction,
@@ -15,14 +16,15 @@ import {
   OnMapLocationChangedAction,
   OnMapLocationMutedAction,
   OnMapLocationWatchedAction,
-  OnIconUpdatedAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
+  UpdateAudience,
 } from "./actions";
 import { Like, Map, Member, Pointing, Transform } from "./types";
 
 export interface IState {
   audiences: Member[];
+  audiencesInPreparation: Member[];
   isAudioEnabled: boolean;
   isCameraEnabled: boolean;
   isMapEnabled: boolean;
@@ -42,6 +44,7 @@ export interface IState {
 
 const initialState: IState = {
   audiences: [],
+  audiencesInPreparation: [],
   isAudioEnabled: true,
   isCameraEnabled: true,
   isMapEnabled: false,
@@ -53,32 +56,38 @@ const initialState: IState = {
 };
 
 export const reducer = reducerWithInitialState(initialState)
-  .case(AddLikeAction.done, (state, { result }) => {
-    const { id, x, y } = result;
-
-    return Object.assign({}, state, {
-      likes: [...state.likes, { id, x, y }],
-    });
-  })
-  .case(AddPeerAction, (state, { peerId, stream }) => {
-    const index = state.audiences.findIndex(a => a.peerId === peerId);
-    let audience;
-    let audiences = state.audiences;
-    if (index !== -1) {
-      audience = audiences[index];
-      audiences[index] = Object.assign({}, audience, { stream: stream });
-      audiences = [...state.audiences];
-    } else {
-      audiences = [...state.audiences, { peerId, stream }];
-    }
+  .case(AddAudience, (state, { peerId, stream, dataURL }) => {
+    const audiencesInPreparation = state.audiencesInPreparation.filter(
+      p => p.peerId !== peerId
+    );
+    const audience = { peerId, stream, dataURL };
 
     // As the presenter peer joined after firing `peer-selected` event, set as a presenter.
     const presenter =
       state._selectedPeerId === peerId ? audience : state.presenter;
     const transform =
       presenter === state.presenter ? state.transform : initialState.transform;
+    return Object.assign({}, state, {
+      audiencesInPreparation,
+      audiences: [...state.audiences, audience],
+      presenter,
+      transform,
+    });
+  })
+  .case(AddAudienceInPreparation, (state, { peerId, stream, dataURL }) => {
+    const audiencesInPreparation = [
+      ...state.audiencesInPreparation,
+      { peerId, stream, dataURL },
+    ];
 
-    return Object.assign({}, state, { audiences, presenter, transform });
+    return Object.assign({}, state, { audiencesInPreparation });
+  })
+  .case(AddLikeAction.done, (state, { result }) => {
+    const { id, x, y } = result;
+
+    return Object.assign({}, state, {
+      likes: [...state.likes, { id, x, y }],
+    });
   })
   .case(AddPointingAction.done, (state, { result }) => {
     const { peerId, x, y } = result;
@@ -182,20 +191,6 @@ export const reducer = reducerWithInitialState(initialState)
   .case(OnMapLocationMutedAction, (state, { isMapEnabled }) => {
     return Object.assign({}, state, { isPresenterMapEnabled: isMapEnabled });
   })
-  .case(OnIconUpdatedAction, (state, { dataURL, peerId }) => {
-    const index = state.audiences.findIndex(a => a.peerId === peerId);
-    let audience;
-    let audiences = state.audiences;
-    if (index !== -1) {
-      audience = audiences[index];
-      audiences[index] = Object.assign({}, audience, { dataURL: dataURL });
-      audiences = [...state.audiences];
-    } else {
-      audiences = [...state.audiences, { peerId, dataURL }];
-    }
-
-    return Object.assign({}, state, { audiences });
-  })
   .case(OnPeerSelectedAction, (state, { peerId }) => {
     const presenter = state.audiences.find(a => a.peerId === peerId);
 
@@ -214,6 +209,20 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
+  })
+  .case(UpdateAudience, (state, { peerId, stream, dataURL }) => {
+    const index = state.audiences.findIndex(a => a.peerId === peerId);
+    const audiences = state.audiences;
+    let audience = audiences[index];
+
+    if (stream) {
+      audience = Object.assign({}, audience, { stream });
+    } else {
+      audience = Object.assign({}, audience, { dataURL });
+    }
+
+    audiences[index] = audience;
+    return Object.assign({}, state, { audiences: [...audiences] });
   });
 
 function updateVideoStreamEnabled(
