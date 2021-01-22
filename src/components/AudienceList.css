@@ -1,10 +1,9 @@
 .audience-list {
-  /*"visibility: hidden" causes the video to freeze only iphone x safari. Therefore, using "z-index: -1" to hide the AudienceList.*/
-  z-index: -1;
   position: absolute;
   bottom: 0;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: left;
+  align-items: flex-end;
   pointer-events: none;
 }
