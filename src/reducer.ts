@@ -151,6 +151,8 @@ export const reducer = reducerWithInitialState(initialState)
     );
     const presenter = audiences.find(a => a.peerId === state.presenter?.peerId);
 
+    updateAudioStreamEnabled(localStream, state.isAudioEnabled);
+
     updateVideoStreamEnabled(
       localStream,
       state.localPeer,
@@ -162,6 +164,8 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(ToggleAudioMutingAction.done, (state, { result }) => {
     const { isEnabled } = result;
+
+    updateAudioStreamEnabled(state.localStream, isEnabled);
 
     return Object.assign({}, state, { isAudioEnabled: isEnabled });
   })
@@ -228,6 +232,19 @@ export const reducer = reducerWithInitialState(initialState)
     audiences[index] = audience;
     return Object.assign({}, state, { audiences: [...audiences] });
   });
+
+function updateAudioStreamEnabled(
+  localStream?: MediaStream,
+  isAudioEnabled?: boolean
+) {
+  if (!localStream) {
+    return;
+  }
+
+  for (const track of localStream.getAudioTracks() || []) {
+    track.enabled = !!isAudioEnabled;
+  }
+}
 
 function updateVideoStreamEnabled(
   localStream?: MediaStream,

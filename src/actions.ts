@@ -330,11 +330,6 @@ export function toggleAudioMuting() {
 
       const state = getState()?.state;
       const isEnabled = !state?.isAudioEnabled;
-      const localStream = state?.localStream;
-
-      for (const track of localStream?.getAudioTracks() || []) {
-        track.enabled = isEnabled;
-      }
 
       const result = { isEnabled };
 
