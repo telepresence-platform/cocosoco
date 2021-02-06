@@ -20,7 +20,8 @@ interface IState {
   network: string | null;
   room: string | null;
   error: string | null;
-  isParticipating?: boolean;
+  isParticipating: boolean;
+  isVideoReady: boolean;
   localStream?: MediaStream;
 }
 
@@ -33,6 +34,7 @@ class Participation extends React.PureComponent<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this._onClick = this._onClick.bind(this);
+    this._onVideoStateChange = this._onVideoStateChange.bind(this);
 
     const url = new URL(document.URL);
     const key = url.searchParams.get("key");
@@ -49,7 +51,15 @@ class Participation extends React.PureComponent<IProps, IState> {
       error = "No specific GoogleMapAPIkey";
     }
 
-    this.state = { key, mapkey, network, room, error };
+    this.state = {
+      key,
+      mapkey,
+      network,
+      room,
+      error,
+      isParticipating: false,
+      isVideoReady: false,
+    };
   }
 
   _updateVideo() {
@@ -106,7 +116,17 @@ class Participation extends React.PureComponent<IProps, IState> {
     participate(key, mapkey, network, room, dataURL, localStream);
   }
 
+  _onVideoStateChange(e: any) {
+    if (e.target.readyState >= 2) {
+      e.target.removeEventListener("loadeddata", this._onVideoStateChange);
+      this.setState({ isVideoReady: true });
+    }
+  }
+
   async componentDidMount(): Promise<void> {
+    const video = this._videoRef.current;
+    video.addEventListener("loadeddata", this._onVideoStateChange);
+
     const localStream = await nextVideoStream();
     this.setState({ localStream });
   }
@@ -116,7 +136,7 @@ class Participation extends React.PureComponent<IProps, IState> {
   }
 
   render() {
-    const { room, error, isParticipating } = this.state;
+    const { room, error, isParticipating, isVideoReady } = this.state;
 
     return (
       <section className="participation">
@@ -137,9 +157,12 @@ class Participation extends React.PureComponent<IProps, IState> {
           <label className="participation__error">{error}</label>
         ) : (
           <button
-            className="participation__button"
+            className={
+              "participation__button" +
+              (isParticipating ? " participation__button--participating" : "")
+            }
             onClick={this._onClick}
-            disabled={isParticipating}
+            disabled={!isVideoReady || isParticipating}
           >
             <label>participate to </label>
             <label className="participation__room">{room}</label>
