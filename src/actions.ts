@@ -501,27 +501,34 @@ function updateAudienceInPreparation(
     }
 
     const mine = state.audiences.find(a => a.peerId === state.localPeer?.id);
-    if (mine) {
-      state.room?.send({
-        type: "icon-updated",
-        dataURL: mine.dataURL,
-        peerId: mine.peerId,
-      });
+    if (!mine) {
+      return;
     }
+
+    state.room.send({
+      type: "icon-updated",
+      dataURL: mine.dataURL,
+      peerId: mine.peerId,
+      to: peerId,
+    });
+
     // Tell who is a presenter now, to peer joined newly.
-    if (state.presenter) {
-      state.room?.send({
+    if (state.presenter?.peerId === mine.peerId) {
+      state.room.send({
         type: "peer-selected",
         peerId: state.presenter.peerId,
+        to: peerId,
       });
-      state.room?.send({
+      state.room.send({
         type: "location-muted",
         isMapEnabled: state.isPresenterMapEnabled,
+        to: peerId,
       });
-      state.room?.send({
+      state.room.send({
         type: "location-changed",
         lat: state.map.lat,
         lng: state.map.lng,
+        to: peerId,
       });
     }
   }
@@ -542,6 +549,12 @@ function onStream(
 }
 
 function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
+  const state = store.getState()?.state;
+
+  if (data.to && data.to !== state?.localPeer?.id) {
+    return;
+  }
+
   switch (data.type) {
     case "like-added": {
       dispatch(addLike(data.x, data.y));
@@ -556,7 +569,6 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
       break;
     }
     case "icon-updated": {
-      const state = store.getState()?.state;
       updateAudienceInPreparation(
         dispatch,
         state,
