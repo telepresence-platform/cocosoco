@@ -168,8 +168,16 @@ function addLike(x: number, y: number) {
 }
 
 function addPointing(peerId: string, x: number, y: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = { peerId, x, y };
+
+    if (!getState()?.state.audiences.some(a => a.peerId === peerId)) {
+      // The audience that set the point is not prepared yet.
+      return;
+    }
 
     try {
       dispatch(AddPointingAction.started(params));
