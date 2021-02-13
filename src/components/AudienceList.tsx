@@ -24,7 +24,7 @@ class AudienceList extends React.PureComponent<IProps> {
           <AudienceItem
             key={audience.peerId}
             audience={audience}
-            isMuted={audience.peerId === localPeer?.id}
+            isMine={audience.peerId === localPeer?.id}
             isSelected={audience.peerId === presenter?.peerId}
           />
         ))}

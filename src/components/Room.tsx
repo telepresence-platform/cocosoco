@@ -1,7 +1,5 @@
 import React from "react";
 
-import PresenterSelecting from "./PresenterSelecting";
-import PresenterIcon from "./PresenterIcon";
 import AudienceList from "./AudienceList";
 import MapPanel from "./MapPanel";
 import Presenter from "./Presenter";
@@ -16,10 +14,6 @@ class Room extends React.PureComponent {
         <ToolList />
         <Presenter />
         <MapPanel />
-        <div className="room__viewtoollist">
-          <PresenterIcon />
-          <PresenterSelecting />
-        </div>
         <AudienceList />
       </section>
     );
