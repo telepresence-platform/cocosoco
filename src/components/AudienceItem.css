@@ -1,9 +1,9 @@
 .audience-item {
   clip-path: circle(36%);
-  width: 14vw;
-  height: 14vw;
-  max-width: 120px;
-  max-height: 120px;
+  width: 13vw;
+  height: 13vw;
+  max-width: 110px;
+  max-height: 110px;
   background-color: #f9f9fa;
   pointer-events: auto;
   display: flex;
@@ -15,6 +15,13 @@
   background-color: #ff1ad9;
 }
 
+.audience-item--mine {
+  width: 15vw;
+  height: 15vw;
+  max-width: 130px;
+  max-height: 130px;
+}
+
 .audience-item__video {
   width: 0;
   height: 0;
@@ -23,8 +30,15 @@
 .audience-item__icon {
   pointer-events: none;
   clip-path: circle(36%);
-  width: 13vw;
-  height: 13vw;
-  max-width: 110px;
-  max-height: 110px;
+  width: 12vw;
+  height: 12vw;
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.audience-item__icon--mine {
+  width: 14vw;
+  height: 14vw;
+  max-width: 120px;
+  max-height: 120px;
 }
