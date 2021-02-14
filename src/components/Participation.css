@@ -24,16 +24,17 @@
 }
 
 .participation__button {
-  background: none;
-  border: 1px solid #38383d;
-  color: #38383d;
+  background-color: #058b00;
+  border: none;
+  border-radius: 1vw;
+  color: #f9f9fa;
   font-size: 5vw;
   font-weight: 100;
   padding: 0.5vw 2vw;
 }
 
-.participation__button:disabled {
-  border-color: #d7d7db;
+.participation__button:disabled:not(.participation__button--participating) {
+  background-color: #737373;
   color: #d7d7db;
 }
 
