@@ -6,19 +6,25 @@ import { actionCreatorFactory } from "../node_modules/typescript-fsa";
 
 import { nextVideoStream } from "./lib/video";
 import { IState } from "./reducer";
-import { TStore } from "./store";
+import { store, TStore } from "./store";
 
 const actionCreator = actionCreatorFactory();
 
+export const AddAudience = actionCreator<{
+  peerId: string;
+  stream: any;
+  dataURL: string;
+}>("ADD_AUDIENCE");
+export const AddAudienceInPreparation = actionCreator<{
+  peerId: string;
+  stream?: any;
+  dataURL?: string;
+}>("ADD_AUDIENCE_IN_PREPARATION");
 export const AddLikeAction = actionCreator.async<
   { id: number; x: number; y: number },
   { id: number; x: number; y: number },
   { error: any }
 >("ADD_LIKE");
-export const AddPeerAction = actionCreator<{
-  peerId: string;
-  stream: any;
-}>("ADD_PEER");
 export const AddPointingAction = actionCreator.async<
   { peerId: string; x: number; y: number },
   { peerId: string; x: number; y: number },
@@ -84,10 +90,6 @@ export const OnMapLocationWatchedAction = actionCreator<{
 export const OnMapLocationMutedAction = actionCreator<{
   isMapEnabled: boolean;
 }>("ON_MAP_MUTED_UPDATED");
-export const OnIconUpdatedAction = actionCreator<{
-  dataURL: string;
-  peerId: string;
-}>("ON_ICON_UPDATED");
 export const OnPeerSelectedAction = actionCreator<{
   peerId: string;
 }>("ON_PEER_SELECTED");
@@ -96,6 +98,11 @@ export const OnTransformChangedAction = actionCreator<{
   y: number;
   scale: number;
 }>("ON_TRANSFORM_CHANGED");
+export const UpdateAudience = actionCreator<{
+  peerId: string;
+  stream?: any;
+  dataURL?: string;
+}>("UPDATE_AUDIENCE");
 
 const pointingTimerMap = new Map();
 
@@ -161,8 +168,16 @@ function addLike(x: number, y: number) {
 }
 
 function addPointing(peerId: string, x: number, y: number) {
-  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
     const params = { peerId, x, y };
+
+    if (!getState()?.state.audiences.some(a => a.peerId === peerId)) {
+      // The audience that set the point is not prepared yet.
+      return;
+    }
 
     try {
       dispatch(AddPointingAction.started(params));
@@ -323,11 +338,6 @@ export function toggleAudioMuting() {
 
       const state = getState()?.state;
       const isEnabled = !state?.isAudioEnabled;
-      const localStream = state?.localStream;
-
-      for (const track of localStream?.getAudioTracks() || []) {
-        track.enabled = isEnabled;
-      }
 
       const result = { isEnabled };
 
@@ -461,41 +471,93 @@ function updateLocationMuting(
   dispatch(OnMapLocationMutedAction({ isMapEnabled }));
 }
 
+function updateAudienceInPreparation(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  state: IState,
+  peerId: string,
+  stream?: any,
+  dataURL?: string
+) {
+  const audienceExist = state.audiences.find(a => a.peerId === peerId);
+
+  if (audienceExist) {
+    dispatch(UpdateAudience({ peerId, stream, dataURL }));
+    return;
+  }
+
+  const audienceInPreparation = state.audiencesInPreparation.find(
+    a => a.peerId === peerId
+  );
+
+  if (audienceInPreparation) {
+    stream = stream || audienceInPreparation.stream;
+    dataURL = dataURL || audienceInPreparation.dataURL;
+  }
+
+  if (stream && dataURL) {
+    dispatch(AddAudience({ peerId, stream, dataURL }));
+  } else {
+    dispatch(AddAudienceInPreparation({ peerId, stream, dataURL }));
+
+    if (!state.room) {
+      return;
+    }
+
+    const mine = state.audiences.find(a => a.peerId === state.localPeer?.id);
+    if (!mine) {
+      return;
+    }
+
+    state.room.send({
+      type: "icon-updated",
+      dataURL: mine.dataURL,
+      peerId: mine.peerId,
+      to: peerId,
+    });
+
+    // Tell who is a presenter now, to peer joined newly.
+    if (state.presenter?.peerId === mine.peerId) {
+      state.room.send({
+        type: "peer-selected",
+        peerId: state.presenter.peerId,
+        to: peerId,
+      });
+      state.room.send({
+        type: "location-muted",
+        isMapEnabled: state.isPresenterMapEnabled,
+        to: peerId,
+      });
+      state.room.send({
+        type: "location-changed",
+        lat: state.map.lat,
+        lng: state.map.lng,
+        to: peerId,
+      });
+    }
+  }
+}
+
 function onStream(
   dispatch: ThunkDispatch<TStore, void, AnyAction>,
   store: TStore,
   stream: any
 ) {
-  dispatch(AddPeerAction({ peerId: stream.peerId, stream }));
-  const audience = store.state.audiences.find(
-    a => a.peerId === store.state.localPeer?.id
+  updateAudienceInPreparation(
+    dispatch,
+    store.state,
+    stream.peerId,
+    stream,
+    undefined
   );
-  if (audience) {
-    store.state.room?.send({
-      type: "icon-updated",
-      dataURL: audience.dataURL,
-      peerId: store.state.localPeer?.id,
-    });
-  }
-  // Tell who is a presenter now, to peer joined newly.
-  if (store.state.presenter) {
-    store.state.room?.send({
-      type: "peer-selected",
-      peerId: store.state.presenter.peerId,
-    });
-    store.state.room?.send({
-      type: "location-muted",
-      isMapEnabled: store.state.isPresenterMapEnabled,
-    });
-    store.state.room?.send({
-      type: "location-changed",
-      lat: store.state.map.lat,
-      lng: store.state.map.lng,
-    });
-  }
 }
 
 function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
+  const state = store.getState()?.state;
+
+  if (data.to && data.to !== state?.localPeer?.id) {
+    return;
+  }
+
   switch (data.type) {
     case "like-added": {
       dispatch(addLike(data.x, data.y));
@@ -510,11 +572,12 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
       break;
     }
     case "icon-updated": {
-      dispatch(
-        OnIconUpdatedAction({
-          dataURL: data.dataURL,
-          peerId: data.peerId,
-        })
+      updateAudienceInPreparation(
+        dispatch,
+        state,
+        data.peerId,
+        undefined,
+        data.dataURL
       );
       break;
     }

@@ -11,7 +11,7 @@ import "./AudienceItem.css";
 
 interface IProps {
   audience: Member;
-  isMuted: boolean;
+  isMine: boolean;
   isSelected: boolean;
   selectPeer: any;
 }
@@ -52,26 +52,25 @@ class AudienceItem extends React.PureComponent<IProps> {
   }
 
   render() {
-    const { isSelected, isMuted, audience } = this.props;
+    const { isSelected, isMine, audience } = this.props;
     return (
       <li
         className={
           "audience-item" +
           (isSelected ? " audience-item--selected" : "") +
-          (isMuted ? " audience-item--mine" : "")
+          (isMine ? " audience-item--mine" : "")
         }
         onClick={this._onClick}
       >
         <img
           src={audience.dataURL}
           className={
-            "audience-item__icon" +
-            (isMuted ? " audience-item__icon--mine" : "")
+            "audience-item__icon" + (isMine ? " audience-item__icon--mine" : "")
           }
         ></img>
         <video
           className="audience-item__video"
-          muted={isMuted}
+          muted={isMine}
           ref={this._videoRef}
         />
       </li>
