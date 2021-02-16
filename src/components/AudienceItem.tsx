@@ -60,7 +60,7 @@ class AudienceItem extends React.PureComponent<IProps> {
           (isSelected ? " audience-item--selected" : "") +
           (isMine ? " audience-item--mine" : "")
         }
-        onClick={this._onClick}
+        onClick={isMine ? this._onClick : undefined}
       >
         <img
           src={audience.dataURL}
