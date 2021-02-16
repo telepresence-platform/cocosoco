@@ -130,11 +130,13 @@ export const reducer = reducerWithInitialState(initialState)
     const audiences = state.audiences.filter(a => a.peerId !== peerId);
     const presenter =
       state.presenter?.peerId === peerId ? null : state.presenter;
+    const isPresenterMapEnabled =
+      state.presenter?.peerId === peerId ? false : state.isPresenterMapEnabled;
 
     return Object.assign({}, state, {
       audiences,
       presenter,
-      isPresenterMapEnabled: !!presenter,
+      isPresenterMapEnabled,
     });
   })
   .case(RemovePointingAction, (state, { peerId }) => {
