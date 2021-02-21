@@ -11,18 +11,22 @@ import "./CameraSwitching.css";
 
 interface IProps {
   switchCamera: any;
+  switchSetting: any;
 }
 
 class CameraSwitching extends React.PureComponent<IProps> {
   render() {
     return (
-      <button onClick={this.props.switchCamera} className="camera-switching">
-        <img
-          src={logo}
-          alt="switch camera"
-          className="camera-switching__image"
-        />
-      </button>
+      <span>
+        <button onClick={this.props.switchCamera} className="camera-switching">
+          <img
+            src={logo}
+            alt="switch camera"
+            className="camera-switching__image"
+          />
+        </button>
+        <button onClick={this.props.switchSetting}>CAMERA SETTING</button>
+      </span>
     );
   }
 }
@@ -31,7 +35,10 @@ const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
   switchCamera: () => {
-    dispatch(switchCamera());
+    dispatch(switchCamera(false));
+  },
+  switchSetting: () => {
+    dispatch(switchCamera(true));
   },
 });
 

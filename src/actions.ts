@@ -4,7 +4,7 @@ import { ThunkDispatch } from "redux-thunk";
 import Peer from "skyway-js";
 import { actionCreatorFactory } from "../node_modules/typescript-fsa";
 
-import { nextVideoStream } from "./lib/video";
+import { nextVideoSetting, nextVideoStream } from "./lib/video";
 import { IState } from "./reducer";
 import { store, TStore } from "./store";
 
@@ -294,7 +294,7 @@ export function setTransform(x: number, y: number, scale: number) {
   };
 }
 
-export function switchCamera() {
+export function switchCamera(isSetting: boolean) {
   return async (
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
     getState: () => TStore
@@ -311,7 +311,13 @@ export function switchCamera() {
         track.enabled = false;
       }
 
-      const localStream = await nextVideoStream();
+      let localStream;
+
+      if (isSetting) {
+        localStream = await nextVideoSetting();
+      } else {
+        localStream = await nextVideoStream();
+      }
 
       // parameter of replaceStream is defined as MediaSource, but localStream is MediaStream.
       // I don't know why..
