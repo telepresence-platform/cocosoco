@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import { TStore } from "../store";
 import AudioMuting from "./AudioMuting";
 import CameraMuting from "./CameraMuting";
-import MapMuting from "./MapMuting";
 import CameraSwitching from "./CameraSwitching";
+import MapMuting from "./MapMuting";
+import PreferencesVisibility from "./PreferencesVisibility";
 import ToolItem from "./ToolItem";
 
 import { Member } from "../types";
@@ -29,6 +30,9 @@ class ToolList extends React.PureComponent<IProps> {
     return amIPresenter ? (
       <ul className="tool-list tool-list--presenter">
         <ToolItem>
+          <PreferencesVisibility />
+        </ToolItem>
+        <ToolItem>
           <CameraSwitching />
         </ToolItem>
         <ToolItem>
@@ -42,7 +46,10 @@ class ToolList extends React.PureComponent<IProps> {
         </ToolItem>
       </ul>
     ) : (
-      <ul className="tool-list">
+      <ul className="tool-list tool-list--audience">
+        <ToolItem>
+          <PreferencesVisibility />
+        </ToolItem>
         <ToolItem>
           <AudioMuting />
         </ToolItem>

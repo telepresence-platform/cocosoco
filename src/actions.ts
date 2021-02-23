@@ -4,7 +4,7 @@ import { ThunkDispatch } from "redux-thunk";
 import Peer from "skyway-js";
 import { actionCreatorFactory } from "../node_modules/typescript-fsa";
 
-import { nextVideoStream } from "./lib/video";
+import { nextVideoStream, updateAudioSettings } from "./lib/video";
 import { IState } from "./reducer";
 import { store, TStore } from "./store";
 
@@ -57,6 +57,9 @@ export const SetLikeAcrion = actionCreator.async<{}, {}, { error: any }>(
 export const SetPointintAcrion = actionCreator.async<{}, {}, { error: any }>(
   "SET_POINTING"
 );
+export const SetPreferencesVisibility = actionCreator<{
+  isVisible: boolean;
+}>("SET_PREFERENCES_VISIBILITY");
 export const SetTransformAcrion = actionCreator.async<{}, {}, { error: any }>(
   "SET_TRANSFORM"
 );
@@ -103,6 +106,11 @@ export const UpdateAudience = actionCreator<{
   stream?: any;
   dataURL?: string;
 }>("UPDATE_AUDIENCE");
+export const UpdatePreferencesAction = actionCreator.async<
+  {},
+  { localStream: MediaStream },
+  { error: any }
+>("UPDATE_PREFERENCES");
 
 const pointingTimerMap = new Map();
 
@@ -294,6 +302,12 @@ export function setTransform(x: number, y: number, scale: number) {
   };
 }
 
+export function setPreferencesVisibility(isVisible: boolean) {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+    dispatch(SetPreferencesVisibility({ isVisible }));
+  };
+}
+
 export function switchCamera() {
   return async (
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
@@ -305,18 +319,10 @@ export function switchCamera() {
       dispatch(SwitchCameraAction.started(params));
 
       const state = getState()?.state;
-
-      // Close previouse stream.
-      for (const track of state?.localStream?.getTracks() || []) {
-        track.enabled = false;
-      }
-
       const localStream = await nextVideoStream();
-
       // parameter of replaceStream is defined as MediaSource, but localStream is MediaStream.
       // I don't know why..
       (state?.room as any)?.replaceStream(localStream);
-
       const result = { localStream };
 
       dispatch(SwitchCameraAction.done({ result, params }));
@@ -401,6 +407,28 @@ export function toggleMapMuting() {
       dispatch(ToggleMapMutingAction.done({ result, params }));
     } catch (error) {
       dispatch(ToggleMapMutingAction.failed({ error, params }));
+    }
+  };
+}
+
+export function updatePreferences(audioPreferences: Object) {
+  return async (
+    dispatch: ThunkDispatch<TStore, void, AnyAction>,
+    getState: () => TStore
+  ) => {
+    const params = { audioPreferences };
+
+    try {
+      dispatch(UpdatePreferencesAction.started(params));
+
+      const state = getState()?.state;
+      const localStream = await await updateAudioSettings(audioPreferences);
+      (state?.room as any)?.replaceStream(localStream);
+      const result = { localStream };
+
+      dispatch(UpdatePreferencesAction.done({ result, params }));
+    } catch (error) {
+      dispatch(UpdatePreferencesAction.failed({ error, params }));
     }
   };
 }

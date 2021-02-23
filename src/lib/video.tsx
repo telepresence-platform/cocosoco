@@ -1,9 +1,11 @@
 let currentIndex = -1;
 let currentStream: any = null;
+
 async function getDevices() {
   const devices = await navigator.mediaDevices.enumerateDevices();
   return devices.filter(device => device.kind === "videoinput");
 }
+
 export async function nextVideoStream() {
   if (currentIndex === -1) {
     // It seems that there are cases the deviceId might be empty unless we call getUserMedia() once.
@@ -13,19 +15,51 @@ export async function nextVideoStream() {
     });
   }
 
+  // default setting.
+  let audioSettings = {
+    autoGainControl: false,
+    echoCancellation: true,
+    noiseSuppression: true,
+  };
+
   if (currentStream) {
+    audioSettings = getCurrentAudioSettings();
     currentStream.getTracks().forEach((track: any) => {
+      track.enabled = false;
       track.stop();
     });
   }
+
   const devices = await getDevices();
   const nextIndex = currentIndex === devices.length - 1 ? 0 : currentIndex + 1;
-  const nextDevice = devices[nextIndex];
-  const deviceId = { exact: nextDevice.deviceId };
+  currentStream = await getStream(devices[nextIndex], audioSettings);
   currentIndex = nextIndex;
-  currentStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
+  return currentStream;
+}
+
+export async function updateAudioSettings(audioSettings: Object) {
+  const currentAudioSettings = getCurrentAudioSettings();
+
+  if (JSON.stringify(currentAudioSettings) === JSON.stringify(audioSettings)) {
+    return currentStream;
+  }
+
+  const devices = await getDevices();
+  currentStream = await getStream(devices[currentIndex], audioSettings);
+  return currentStream;
+}
+
+export function getCurrentAudioSettings() {
+  return currentStream.getAudioTracks()[0].getSettings();
+}
+
+async function getStream(device: any, audioSettings: Object) {
+  const deviceId = { exact: device.deviceId };
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: audioSettings,
     video: { deviceId },
   });
-  return currentStream;
+
+  return stream;
 }
