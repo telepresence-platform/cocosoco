@@ -7,6 +7,8 @@ import { TStore } from "../store";
 import { selectPeer } from "../actions";
 import { Member } from "../types";
 
+import AudienceStream from "./AudienceStream";
+
 import "./AudienceItem.css";
 
 interface IProps {
@@ -17,9 +19,6 @@ interface IProps {
 }
 
 class AudienceItem extends React.PureComponent<IProps> {
-  // As video.playsInline is not defined in HTMLVideoElement, add "any" as well.
-  private _videoRef = React.createRef<HTMLVideoElement | any>();
-
   constructor(props: IProps) {
     super(props);
 
@@ -31,34 +30,16 @@ class AudienceItem extends React.PureComponent<IProps> {
     selectPeer(audience.peerId);
   }
 
-  _updateVideo() {
-    const video = this._videoRef.current;
-    if (!video) {
-      return;
-    }
-
-    const { audience } = this.props;
-    video.srcObject = audience.stream;
-    video.playsInline = true;
-    video.play();
-  }
-
-  componentDidMount() {
-    this._updateVideo();
-  }
-
-  componentDidUpdate() {
-    this._updateVideo();
-  }
-
   render() {
     const { isSelected, isMine, audience } = this.props;
     return (
       <li
         className={
           "audience-item" +
-          (isSelected ? " audience-item--selected" : "") +
-          (isMine ? " audience-item--mine" : "")
+          (isMine ? " audience-item--mine" : "") +
+          (isSelected
+            ? " audience-item--selected"
+            : " audience-item--notselected")
         }
         onClick={isMine ? this._onClick : undefined}
       >
@@ -68,11 +49,13 @@ class AudienceItem extends React.PureComponent<IProps> {
             "audience-item__icon" + (isMine ? " audience-item__icon--mine" : "")
           }
         ></img>
-        <video
-          className="audience-item__video"
-          muted={isMine}
-          ref={this._videoRef}
-        />
+        <span
+          className={
+            (isMine ? " audience-item__inner--mine" : " audience-item__inner") +
+            (audience.isSpeaking ? " audience-item__inner--speaking" : "")
+          }
+        ></span>
+        <AudienceStream stream={audience.stream} isMine={isMine} />
       </li>
     );
   }

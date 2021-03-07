@@ -220,13 +220,15 @@ export const reducer = reducerWithInitialState(initialState)
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
   })
-  .case(UpdateAudience, (state, { peerId, stream, dataURL }) => {
+  .case(UpdateAudience, (state, { peerId, isSpeaking, stream, dataURL }) => {
     const index = state.audiences.findIndex(a => a.peerId === peerId);
     const audiences = state.audiences;
     let audience = audiences[index];
 
     if (stream) {
       audience = Object.assign({}, audience, { stream });
+    } else if (isSpeaking !== undefined) {
+      audience = Object.assign({}, audience, { isSpeaking });
     } else {
       audience = Object.assign({}, audience, { dataURL });
     }
