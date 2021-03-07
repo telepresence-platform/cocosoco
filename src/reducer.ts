@@ -9,16 +9,18 @@ import {
   RemoveLikeAction,
   RemovePeerAction,
   RemovePointingAction,
+  SetPreferencesVisibility,
   SwitchCameraAction,
   ToggleAudioMutingAction,
   ToggleCameraMutingAction,
   ToggleMapMutingAction,
+  UpdateAudience,
+  UpdatePreferencesAction,
   OnMapLocationChangedAction,
   OnMapLocationMutedAction,
   OnMapLocationWatchedAction,
   OnPeerSelectedAction,
   OnTransformChangedAction,
-  UpdateAudience,
 } from "./actions";
 import { Like, Map, Member, Pointing, Transform } from "./types";
 
@@ -28,6 +30,7 @@ export interface IState {
   isAudioEnabled: boolean;
   isCameraEnabled: boolean;
   isMapEnabled: boolean;
+  isPreferencesVisible: boolean;
   isPresenterMapEnabled: boolean;
   likes: Like[];
   localPeer?: Peer;
@@ -48,6 +51,7 @@ const initialState: IState = {
   isAudioEnabled: true,
   isCameraEnabled: true,
   isMapEnabled: false,
+  isPreferencesVisible: false,
   isPresenterMapEnabled: false,
   likes: [],
   pointings: [],
@@ -144,25 +148,12 @@ export const reducer = reducerWithInitialState(initialState)
 
     return Object.assign({}, state, { pointings });
   })
+  .case(SetPreferencesVisibility, (state, { isVisible }) => {
+    return Object.assign({}, state, { isPreferencesVisible: isVisible });
+  })
   .case(SwitchCameraAction.done, (state, { result }) => {
     const { localStream } = result;
-    const peerId = state.localPeer?.id;
-
-    const audiences = state.audiences.map(a =>
-      a.peerId === peerId ? Object.assign({}, a, { stream: localStream }) : a
-    );
-    const presenter = audiences.find(a => a.peerId === state.presenter?.peerId);
-
-    updateAudioStreamEnabled(localStream, state.isAudioEnabled);
-
-    updateVideoStreamEnabled(
-      localStream,
-      state.localPeer,
-      state.isCameraEnabled,
-      presenter
-    );
-
-    return Object.assign({}, state, { audiences, localStream, presenter });
+    return updateLocalStream(state, localStream);
   })
   .case(ToggleAudioMutingAction.done, (state, { result }) => {
     const { isEnabled } = result;
@@ -187,6 +178,26 @@ export const reducer = reducerWithInitialState(initialState)
     const { isEnabled } = result;
 
     return Object.assign({}, state, { isMapEnabled: isEnabled });
+  })
+  .case(UpdateAudience, (state, { peerId, isSpeaking, stream, dataURL }) => {
+    const index = state.audiences.findIndex(a => a.peerId === peerId);
+    const audiences = state.audiences;
+    let audience = audiences[index];
+
+    if (stream) {
+      audience = Object.assign({}, audience, { stream });
+    } else if (isSpeaking !== undefined) {
+      audience = Object.assign({}, audience, { isSpeaking });
+    } else {
+      audience = Object.assign({}, audience, { dataURL });
+    }
+
+    audiences[index] = audience;
+    return Object.assign({}, state, { audiences: [...audiences] });
+  })
+  .case(UpdatePreferencesAction.done, (state, { result }) => {
+    const { localStream } = result;
+    return updateLocalStream(state, localStream);
   })
   .case(OnMapLocationChangedAction, (state, { lat, lng }) => {
     return Object.assign({}, state, {
@@ -219,22 +230,6 @@ export const reducer = reducerWithInitialState(initialState)
   })
   .case(OnTransformChangedAction, (state, { x, y, scale }) => {
     return Object.assign({}, state, { transform: { x, y, scale } });
-  })
-  .case(UpdateAudience, (state, { peerId, isSpeaking, stream, dataURL }) => {
-    const index = state.audiences.findIndex(a => a.peerId === peerId);
-    const audiences = state.audiences;
-    let audience = audiences[index];
-
-    if (stream) {
-      audience = Object.assign({}, audience, { stream });
-    } else if (isSpeaking !== undefined) {
-      audience = Object.assign({}, audience, { isSpeaking });
-    } else {
-      audience = Object.assign({}, audience, { dataURL });
-    }
-
-    audiences[index] = audience;
-    return Object.assign({}, state, { audiences: [...audiences] });
   });
 
 function updateAudioStreamEnabled(
@@ -266,4 +261,24 @@ function updateVideoStreamEnabled(
   for (const track of localStream.getVideoTracks() || []) {
     track.enabled = isEnabled;
   }
+}
+
+function updateLocalStream(state: IState, localStream: MediaStream) {
+  const peerId = state.localPeer?.id;
+
+  const audiences = state.audiences.map(a =>
+    a.peerId === peerId ? Object.assign({}, a, { stream: localStream }) : a
+  );
+  const presenter = audiences.find(a => a.peerId === state.presenter?.peerId);
+
+  updateAudioStreamEnabled(localStream, state.isAudioEnabled);
+
+  updateVideoStreamEnabled(
+    localStream,
+    state.localPeer,
+    state.isCameraEnabled,
+    presenter
+  );
+
+  return Object.assign({}, state, { audiences, localStream, presenter });
 }
