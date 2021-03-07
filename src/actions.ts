@@ -103,6 +103,7 @@ export const OnTransformChangedAction = actionCreator<{
 }>("ON_TRANSFORM_CHANGED");
 export const UpdateAudience = actionCreator<{
   peerId: string;
+  isSpeaking?: boolean;
   stream?: any;
   dataURL?: string;
 }>("UPDATE_AUDIENCE");
@@ -113,6 +114,7 @@ export const UpdatePreferencesAction = actionCreator.async<
 >("UPDATE_PREFERENCES");
 
 const pointingTimerMap = new Map();
+let audioStatusTimeout: number;
 
 export function participate(
   key: string,
@@ -152,6 +154,7 @@ export function participate(
       };
 
       dispatch(ParticipateAction.done({ result, params }));
+      startUpdatingAudioStatus(dispatch, getState, localPeer.id, localStream);
     } catch (error) {
       dispatch(ParticipateAction.failed({ error, params }));
     }
@@ -324,6 +327,14 @@ export function switchCamera() {
       // I don't know why..
       (state?.room as any)?.replaceStream(localStream);
       const result = { localStream };
+      if (state.localPeer) {
+        startUpdatingAudioStatus(
+          dispatch,
+          getState,
+          state.localPeer.id,
+          localStream
+        );
+      }
 
       dispatch(SwitchCameraAction.done({ result, params }));
     } catch (error) {
@@ -459,6 +470,67 @@ async function ActivateMap(
   if (room) {
     updateLocation(dispatch, room, lat, lng);
   }
+}
+
+function startUpdatingAudioStatus(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>,
+  getState: () => TStore,
+  peerId: string,
+  localStream: MediaStream
+) {
+  const speakingThreshold = 2.5;
+  const updateIntervalTime = 500;
+  const inspectionRangeTime = 3000;
+  const averages = new Array(inspectionRangeTime / updateIntervalTime);
+  averages.fill(0);
+
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const sourceNode = audioContext.createMediaStreamSource(localStream);
+  const analyserNode = audioContext.createAnalyser();
+  analyserNode.fftSize = 32;
+  sourceNode.connect(analyserNode);
+  const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+
+  const updateAudioStatus = function () {
+    analyserNode.getByteTimeDomainData(dataArray);
+
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; ++i) {
+      const value = dataArray[i];
+      // See the following document to know the reason why this depends on 128.
+      // https://www.w3.org/TR/webaudio/#dom-analysernode-getbytetimedomaindata
+      sum += Math.abs(value - 128);
+    }
+    for (let i = 0; i < averages.length - 1; i++) {
+      averages[i] = averages[i + 1];
+    }
+    averages[averages.length - 1] = sum / dataArray.length;
+
+    const averagesSum = averages.reduce(function (accumulator, currentValue) {
+      return accumulator + currentValue;
+    });
+    const isSpeaking = averagesSum / averages.length > speakingThreshold;
+
+    const state = store.getState()?.state;
+    const audience = state.audiences.find(a => a.peerId === peerId);
+
+    if (audience?.isSpeaking !== isSpeaking) {
+      dispatch(UpdateAudience({ peerId, isSpeaking }));
+      state.room?.send({
+        type: "audio-status-updated",
+        isSpeaking: isSpeaking,
+        peerId: peerId,
+      });
+    }
+
+    audioStatusTimeout = window.setTimeout(
+      updateAudioStatus,
+      updateIntervalTime
+    );
+  };
+
+  clearTimeout(audioStatusTimeout);
+  updateAudioStatus();
 }
 
 function amIPresenter(state: IState) {
@@ -615,6 +687,15 @@ function onData(dispatch: ThunkDispatch<TStore, void, AnyAction>, data: any) {
     }
     case "pointing-added": {
       dispatch(addPointing(data.peerId, data.x, data.y));
+      break;
+    }
+    case "audio-status-updated": {
+      dispatch(
+        UpdateAudience({
+          peerId: data.peerId,
+          isSpeaking: data.isSpeaking,
+        })
+      );
       break;
     }
     case "transform-changed": {
