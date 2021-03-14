@@ -78,11 +78,19 @@ export const ToggleCameraMutingAction = actionCreator.async<
   { isEnabled: boolean },
   { error: any }
 >("TOGGLE_CAMERA_MUTING");
+export const ToggleFullscreenModeAction = actionCreator.async<
+  {},
+  {},
+  { error: any }
+>("TOGGLE_FULLSCREEN_MODE");
 export const ToggleMapMutingAction = actionCreator.async<
   {},
   { isEnabled: boolean },
   { error: any }
 >("TOGGLE_MAP_MUTING");
+export const OnFullscreenModeChangedAction = actionCreator<{
+  isActive: boolean;
+}>("ON_FULLSCREEN_MODE_CHANGED");
 export const OnMapLocationChangedAction = actionCreator<{
   lat: number;
   lng: number;
@@ -155,6 +163,7 @@ export function participate(
 
       dispatch(ParticipateAction.done({ result, params }));
       startUpdatingAudioStatus(dispatch, getState, localPeer.id, localStream);
+      startObservationFullscreen(dispatch);
     } catch (error) {
       dispatch(ParticipateAction.failed({ error, params }));
     }
@@ -387,6 +396,41 @@ export function toggleCameraMuting() {
   };
 }
 
+export function toggleFullscreenMode() {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
+    const params = {};
+
+    try {
+      dispatch(ToggleFullscreenModeAction.started(params));
+
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const target = document.documentElement;
+        if (target.requestFullscreen) {
+          target.requestFullscreen();
+        } else if (target.webkitRequestFullscreen) {
+          target.webkitRequestFullscreen();
+        } else {
+          throw new Error("No requestFullscreen function found");
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else {
+          throw new Error("No exitFullscreen function found");
+        }
+      }
+
+      const result = {};
+
+      dispatch(ToggleFullscreenModeAction.done({ result, params }));
+    } catch (error) {
+      dispatch(ToggleFullscreenModeAction.failed({ error, params }));
+    }
+  };
+}
+
 export function toggleMapMuting() {
   return async (
     dispatch: ThunkDispatch<TStore, void, AnyAction>,
@@ -470,6 +514,19 @@ async function ActivateMap(
   if (room) {
     updateLocation(dispatch, room, lat, lng);
   }
+}
+
+function startObservationFullscreen(
+  dispatch: ThunkDispatch<TStore, void, AnyAction>
+) {
+  document.addEventListener("fullscreenchange", () => {
+    const isActive = !!document.fullscreenElement;
+    dispatch(OnFullscreenModeChangedAction({ isActive }));
+  });
+  document.addEventListener("webkitfullscreenchange", () => {
+    const isActive = !!document.webkitFullscreenElement;
+    dispatch(OnFullscreenModeChangedAction({ isActive }));
+  });
 }
 
 function startUpdatingAudioStatus(

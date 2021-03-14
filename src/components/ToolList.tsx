@@ -5,6 +5,7 @@ import { TStore } from "../store";
 import AudioMuting from "./AudioMuting";
 import CameraMuting from "./CameraMuting";
 import CameraSwitching from "./CameraSwitching";
+import FullscreenMode from "./FullscreenMode";
 import MapMuting from "./MapMuting";
 import PreferencesVisibility from "./PreferencesVisibility";
 import ToolItem from "./ToolItem";
@@ -30,6 +31,9 @@ class ToolList extends React.PureComponent<IProps> {
     return amIPresenter ? (
       <ul className="tool-list tool-list--presenter">
         <ToolItem>
+          <FullscreenMode />
+        </ToolItem>
+        <ToolItem>
           <PreferencesVisibility />
         </ToolItem>
         <ToolItem>
@@ -47,6 +51,9 @@ class ToolList extends React.PureComponent<IProps> {
       </ul>
     ) : (
       <ul className="tool-list tool-list--audience">
+        <ToolItem>
+          <FullscreenMode />
+        </ToolItem>
         <ToolItem>
           <PreferencesVisibility />
         </ToolItem>

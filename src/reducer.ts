@@ -16,6 +16,7 @@ import {
   ToggleMapMutingAction,
   UpdateAudience,
   UpdatePreferencesAction,
+  OnFullscreenModeChangedAction,
   OnMapLocationChangedAction,
   OnMapLocationMutedAction,
   OnMapLocationWatchedAction,
@@ -29,6 +30,7 @@ export interface IState {
   audiencesInPreparation: Member[];
   isAudioEnabled: boolean;
   isCameraEnabled: boolean;
+  isFullscreenActive: boolean;
   isMapEnabled: boolean;
   isPreferencesVisible: boolean;
   isPresenterMapEnabled: boolean;
@@ -50,6 +52,7 @@ const initialState: IState = {
   audiencesInPreparation: [],
   isAudioEnabled: true,
   isCameraEnabled: true,
+  isFullscreenActive: false,
   isMapEnabled: false,
   isPreferencesVisible: false,
   isPresenterMapEnabled: false,
@@ -198,6 +201,9 @@ export const reducer = reducerWithInitialState(initialState)
   .case(UpdatePreferencesAction.done, (state, { result }) => {
     const { localStream } = result;
     return updateLocalStream(state, localStream);
+  })
+  .case(OnFullscreenModeChangedAction, (state, { isActive }) => {
+    return Object.assign({}, state, { isFullscreenActive: isActive });
   })
   .case(OnMapLocationChangedAction, (state, { lat, lng }) => {
     return Object.assign({}, state, {

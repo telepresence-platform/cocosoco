@@ -10,9 +10,9 @@
 }
 
 .tool-list--audience {
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto 1fr;
 }
 
 .tool-list--presenter {
-  grid-template-columns: auto 1fr auto auto auto;
+  grid-template-columns: auto auto 1fr auto auto auto;
 }
