@@ -109,7 +109,7 @@ export const UpdateAudience = actionCreator<{
 }>("UPDATE_AUDIENCE");
 export const UpdatePreferencesAction = actionCreator.async<
   {},
-  { localStream: MediaStream },
+  {},
   { error: any }
 >("UPDATE_PREFERENCES");
 
@@ -423,20 +423,15 @@ export function toggleMapMuting() {
 }
 
 export function updatePreferences(audioPreferences: Object) {
-  return async (
-    dispatch: ThunkDispatch<TStore, void, AnyAction>,
-    getState: () => TStore
-  ) => {
+  return async (dispatch: ThunkDispatch<TStore, void, AnyAction>) => {
     const params = { audioPreferences };
 
     try {
       dispatch(UpdatePreferencesAction.started(params));
 
-      const state = getState()?.state;
-      const localStream = await await updateAudioSettings(audioPreferences);
-      (state?.room as any)?.replaceStream(localStream);
-      const result = { localStream };
+      await updateAudioSettings(audioPreferences);
 
+      const result = {};
       dispatch(UpdatePreferencesAction.done({ result, params }));
     } catch (error) {
       dispatch(UpdatePreferencesAction.failed({ error, params }));

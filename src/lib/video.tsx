@@ -38,15 +38,7 @@ export async function nextVideoStream() {
 }
 
 export async function updateAudioSettings(audioSettings: Object) {
-  const currentAudioSettings = getCurrentAudioSettings();
-
-  if (JSON.stringify(currentAudioSettings) === JSON.stringify(audioSettings)) {
-    return currentStream;
-  }
-
-  const devices = await getDevices();
-  currentStream = await getStream(devices[currentIndex], audioSettings);
-  return currentStream;
+  currentStream.getAudioTracks()[0].applyConstraints(audioSettings);
 }
 
 export function getCurrentAudioSettings() {

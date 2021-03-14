@@ -15,7 +15,6 @@ import {
   ToggleCameraMutingAction,
   ToggleMapMutingAction,
   UpdateAudience,
-  UpdatePreferencesAction,
   OnMapLocationChangedAction,
   OnMapLocationMutedAction,
   OnMapLocationWatchedAction,
@@ -194,10 +193,6 @@ export const reducer = reducerWithInitialState(initialState)
 
     audiences[index] = audience;
     return Object.assign({}, state, { audiences: [...audiences] });
-  })
-  .case(UpdatePreferencesAction.done, (state, { result }) => {
-    const { localStream } = result;
-    return updateLocalStream(state, localStream);
   })
   .case(OnMapLocationChangedAction, (state, { lat, lng }) => {
     return Object.assign({}, state, {

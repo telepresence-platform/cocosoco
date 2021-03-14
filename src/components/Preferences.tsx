@@ -12,6 +12,7 @@ import "./Preferences.css";
 
 interface IProps {
   closePreferences: any;
+  updatePreferences: any;
 }
 
 class Preferences extends React.PureComponent<IProps> {
@@ -38,6 +39,7 @@ class Preferences extends React.PureComponent<IProps> {
                   id="preferences-checkbox--echo-cancelling"
                   ref={this._echoCancellationRef}
                   defaultChecked={echoCancellation}
+                  onChange={() => this.props.updatePreferences(this)}
                   className="preferences-checkbox"
                 />
                 <label htmlFor="preferences-checkbox--echo-cancelling">
@@ -50,6 +52,7 @@ class Preferences extends React.PureComponent<IProps> {
                   id="preferences-checkbox--noise-suppression"
                   ref={this._noiseSuppressionRef}
                   defaultChecked={noiseSuppression}
+                  onChange={() => this.props.updatePreferences(this)}
                   className="preferences-checkbox"
                 />
                 <label htmlFor="preferences-checkbox--noise-suppression">
@@ -62,6 +65,7 @@ class Preferences extends React.PureComponent<IProps> {
                   id="preferences-checkbox--auto-gain-control"
                   ref={this._autoGainControlRef}
                   defaultChecked={autoGainControl}
+                  onChange={() => this.props.updatePreferences(this)}
                   className="preferences-checkbox"
                 />
                 <label htmlFor="preferences-checkbox--auto-gain-control">
@@ -70,7 +74,7 @@ class Preferences extends React.PureComponent<IProps> {
               </li>
             </ul>
             <button
-              onClick={() => this.props.closePreferences(this)}
+              onClick={() => this.props.closePreferences()}
               className="preferences-close"
             >
               <img
@@ -89,14 +93,16 @@ class Preferences extends React.PureComponent<IProps> {
 const mapDispatchToProps = (
   dispatch: ThunkDispatch<TStore, void, AnyAction>
 ) => ({
-  closePreferences: async (target: any) => {
+  updatePreferences: async (target: any) => {
     const audioSettings = {
       echoCancellation: target._echoCancellationRef.current.checked,
       noiseSuppression: target._noiseSuppressionRef.current.checked,
       autoGainControl: target._autoGainControlRef.current.checked,
     };
     dispatch(updatePreferences(audioSettings));
-    await dispatch(setPreferencesVisibility(false));
+  },
+  closePreferences: () => {
+    dispatch(setPreferencesVisibility(false));
   },
 });
 
